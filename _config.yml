@@ -1,0 +1,32 @@
+# GitHub Pages configuration for WIBA Status Page
+title: "WIBA Status"
+description: "Real-time status monitoring for WIBA platform services"
+url: "https://wiba-org.github.io"
+baseurl: "/wiba-status"
+
+# Exclude files from Jekyll processing
+exclude:
+  - README.md
+  - scripts/
+  - .github/
+  - node_modules/
+  - package*.json
+  - "*.sh"
+
+# Include data files
+include:
+  - data/
+
+# Use minimal theme
+theme: minima
+
+# Plugins
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+
+# Markdown processor
+markdown: kramdown
+
+# Syntax highlighting
+highlighter: rouge
