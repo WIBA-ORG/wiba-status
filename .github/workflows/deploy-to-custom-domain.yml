@@ -10,7 +10,7 @@ on:
 
 env:
   CUSTOM_DOMAIN: status.wiba.dev
-  WEB_ROOT: /var/www/status
+  WEB_ROOT: /var/www/status.wiba.dev
 
 jobs:
   deploy-to-custom-domain:
@@ -46,11 +46,11 @@ jobs:
 
     - name: Update nginx configuration if needed
       run: |
-        NGINX_CONFIG="/etc/nginx/sites-available/wiba-status"
+        NGINX_CONFIG="/etc/nginx/sites-available/status-wiba"
         
         if [ ! -f "$NGINX_CONFIG" ]; then
           echo "📝 Creating nginx configuration for status subdomain..."
-          sudo cp nginx-status-config.conf "$NGINX_CONFIG"
+          sudo cp nginx-status.conf "$NGINX_CONFIG"
           sudo ln -sf "$NGINX_CONFIG" /etc/nginx/sites-enabled/
           
           echo "✅ Nginx configuration created"
