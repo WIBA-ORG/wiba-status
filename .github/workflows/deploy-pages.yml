@@ -1,0 +1,62 @@
+name: Deploy Status Page to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    
+    - name: Validate status data
+      run: |
+        echo "Validating status.json..."
+        if [ ! -f "data/status.json" ]; then
+          echo "status.json not found, creating initial version"
+          mkdir -p data
+          cp data/status.json.template data/status.json 2>/dev/null || echo '{}' > data/status.json
+        fi
+        
+        # Validate JSON syntax
+        if ! jq empty data/status.json; then
+          echo "Invalid JSON in status.json"
+          exit 1
+        fi
+        
+        echo "Status data is valid"
+    
+    - name: Setup Pages
+      uses: actions/configure-pages@v4
+    
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: '.'
+        
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
+      
+    - name: Deployment summary
+      run: |
+        echo "### 🚀 Status Page Deployed Successfully" >> $GITHUB_STEP_SUMMARY
+        echo "**URL:** ${{ steps.deployment.outputs.page_url }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Deployed at:** $(date -u)" >> $GITHUB_STEP_SUMMARY

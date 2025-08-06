@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WIBA Status - System Health Dashboard</title>
+    <meta name="description" content="Real-time status and health monitoring for WIBA platform services">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🔋%3C/text%3E%3C/svg%3E">
+    <link rel="stylesheet" href="assets/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <h1>🔋 WIBA Status</h1>
+                    <p>Real-time system health monitoring</p>
+                </div>
+                <div class="header-actions">
+                    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+                        <span class="theme-icon">🌙</span>
+                    </button>
+                    <div class="last-updated">
+                        <span>Last updated: <span id="last-updated">Loading...</span></span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="main">
+            <section class="overall-status">
+                <div class="status-card overall" id="overall-status">
+                    <div class="status-indicator">
+                        <div class="status-dot loading"></div>
+                        <span class="status-text">Loading...</span>
+                    </div>
+                    <div class="status-message" id="overall-message">Checking system status...</div>
+                </div>
+            </section>
+
+            <section class="services">
+                <h2>Service Status</h2>
+                <div class="services-grid" id="services-grid">
+                    <!-- Services will be loaded here -->
+                </div>
+            </section>
+
+            <section class="metrics">
+                <h2>System Metrics</h2>
+                <div class="metrics-grid" id="metrics-grid">
+                    <!-- Metrics will be loaded here -->
+                </div>
+            </section>
+
+            <section class="performance">
+                <h2>Performance Overview</h2>
+                <div class="performance-grid" id="performance-grid">
+                    <!-- Performance charts will be loaded here -->
+                </div>
+            </section>
+
+            <section class="recent-deployments">
+                <h2>Recent Deployments</h2>
+                <div class="deployments-list" id="deployments-list">
+                    <!-- Deployments will be loaded here -->
+                </div>
+            </section>
+
+            <section class="incidents">
+                <h2>Recent Incidents</h2>
+                <div class="incidents-list" id="incidents-list">
+                    <!-- Incidents will be loaded here -->
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="https://wiba.dev" target="_blank">WIBA Platform</a>
+                    <a href="https://github.com/WIBA-ORG" target="_blank">GitHub</a>
+                    <a href="data/status.json" target="_blank">Raw Data</a>
+                    <a href="https://wiba-org.github.io/wiba-status" target="_blank">Backup Site</a>
+                </div>
+                <div class="footer-info">
+                    <p>Powered by GitHub Actions • Updated every 5 minutes</p>
+                    <p class="deployment-info">Deployed from: <span id="deployment-info">Loading...</span></p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="assets/script.js"></script>
+</body>
+</html>

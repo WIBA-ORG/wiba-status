@@ -1,0 +1,159 @@
+name: Deploy Status Page to Custom Domain
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+  schedule:
+    # Deploy daily to ensure custom domain is updated
+    - cron: '0 6 * * *'
+
+env:
+  CUSTOM_DOMAIN: status.wiba.dev
+  WEB_ROOT: /var/www/status
+
+jobs:
+  deploy-to-custom-domain:
+    runs-on: self-hosted
+    permissions:
+      contents: read
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Create web root directory
+      run: |
+        sudo mkdir -p ${{ env.WEB_ROOT }}
+        sudo chown $USER:$USER ${{ env.WEB_ROOT }}
+
+    - name: Sync status page files
+      run: |
+        echo "🚀 Deploying status page to custom domain..."
+        
+        # Copy main files
+        cp -r index.html assets/ data/ ${{ env.WEB_ROOT }}/
+        
+        # Create health check endpoint
+        echo "OK" | sudo tee ${{ env.WEB_ROOT }}/health > /dev/null
+        
+        # Set proper permissions
+        sudo chown -R www-data:www-data ${{ env.WEB_ROOT }}
+        sudo chmod -R 644 ${{ env.WEB_ROOT }}
+        sudo find ${{ env.WEB_ROOT }} -type d -exec chmod 755 {} \;
+        
+        echo "✅ Files deployed to ${{ env.WEB_ROOT }}"
+
+    - name: Update nginx configuration if needed
+      run: |
+        NGINX_CONFIG="/etc/nginx/sites-available/wiba-status"
+        
+        if [ ! -f "$NGINX_CONFIG" ]; then
+          echo "📝 Creating nginx configuration for status subdomain..."
+          sudo cp nginx-status-config.conf "$NGINX_CONFIG"
+          sudo ln -sf "$NGINX_CONFIG" /etc/nginx/sites-enabled/
+          
+          echo "✅ Nginx configuration created"
+        else
+          echo "Nginx configuration already exists"
+        fi
+
+    - name: Test nginx configuration
+      run: |
+        sudo nginx -t
+        if [ $? -eq 0 ]; then
+          echo "✅ Nginx configuration is valid"
+          sudo systemctl reload nginx
+          echo "✅ Nginx reloaded"
+        else
+          echo "❌ Nginx configuration test failed"
+          exit 1
+        fi
+
+    - name: Verify deployment
+      run: |
+        echo "🔍 Verifying deployment..."
+        
+        # Wait for nginx to reload
+        sleep 2
+        
+        # Test local access
+        if curl -f http://localhost/health -H "Host: ${{ env.CUSTOM_DOMAIN }}"; then
+          echo "✅ Local health check passed"
+        else
+          echo "❌ Local health check failed"
+          exit 1
+        fi
+        
+        # Test status page content
+        if curl -s http://localhost/ -H "Host: ${{ env.CUSTOM_DOMAIN }}" | grep -q "WIBA Status"; then
+          echo "✅ Status page content verified"
+        else
+          echo "❌ Status page content verification failed"
+          exit 1
+        fi
+
+    - name: Update deployment record
+      run: |
+        echo "📊 Recording deployment..."
+        
+        # Create deployment record
+        DEPLOYMENT_RECORD='
+        {
+          "deployment_id": "'${{ github.run_number }}'",
+          "service": "WIBA Status Page",
+          "status": "success",
+          "deployed_at": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'",
+          "deployed_by": "'${{ github.actor }}'",
+          "commit_sha": "'${{ github.sha }}'",
+          "duration": "N/A",
+          "target": "custom_domain",
+          "url": "https://'${{ env.CUSTOM_DOMAIN }}'"
+        }'
+        
+        # Update status.json with deployment info
+        if [ -f "data/status.json" ]; then
+          jq --argjson deployment "$DEPLOYMENT_RECORD" '
+            .recent_deployments = ([$deployment] + (.recent_deployments // [])) | .[0:10] |
+            .system_info.last_deployment = $deployment
+          ' data/status.json > data/status_updated.json
+          
+          mv data/status_updated.json data/status.json
+          cp data/status.json ${{ env.WEB_ROOT }}/data/
+          
+          echo "✅ Deployment recorded in status data"
+        fi
+
+    - name: Deployment summary
+      run: |
+        echo "### 🚀 Status Page Deployed to Custom Domain" >> $GITHUB_STEP_SUMMARY
+        echo "**Primary URL:** https://${{ env.CUSTOM_DOMAIN }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Backup URL:** https://wiba-org.github.io/wiba-status" >> $GITHUB_STEP_SUMMARY
+        echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Deployed at:** $(date -u)" >> $GITHUB_STEP_SUMMARY
+        
+        echo ""
+        echo "✅ Status page successfully deployed to custom domain!"
+        echo "🔗 Primary: https://${{ env.CUSTOM_DOMAIN }}"
+        echo "🔗 Backup: https://wiba-org.github.io/wiba-status"
+
+    - name: Rollback on failure
+      if: failure()
+      run: |
+        echo "💥 Deployment failed - checking rollback options..."
+        
+        # Try to restore nginx to working state
+        if [ -f "/etc/nginx/sites-enabled/wiba-status" ]; then
+          echo "Disabling failed nginx configuration..."
+          sudo rm -f /etc/nginx/sites-enabled/wiba-status
+          sudo nginx -t && sudo systemctl reload nginx
+        fi
+        
+        # Try to restore web files from backup if exists
+        BACKUP_DIR="/home/arman/wiba-backups/status"
+        if [ -d "$BACKUP_DIR" ]; then
+          echo "Restoring from backup..."
+          sudo cp -r "$BACKUP_DIR"/* ${{ env.WEB_ROOT }}/
+        fi
+        
+        echo "🚨 Deployment failed - manual intervention may be required"

@@ -1,0 +1,272 @@
+name: Manage Incidents
+
+on:
+  issues:
+    types: [opened, closed, labeled]
+  workflow_dispatch:
+  repository_dispatch:
+    types: [create-incident]
+    inputs:
+      incident_title:
+        description: 'Incident title'
+        required: true
+        type: string
+      incident_description:
+        description: 'Incident description'
+        required: true
+        type: string
+      severity:
+        description: 'Incident severity'
+        required: true
+        type: choice
+        options:
+          - low
+          - medium
+          - high
+          - critical
+      services_affected:
+        description: 'Affected services (comma-separated)'
+        required: false
+        type: string
+
+jobs:
+  manage-incident:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Create incident from manual trigger
+      if: github.event_name == 'workflow_dispatch'
+      run: |
+        echo "Creating incident from manual trigger"
+        
+        INCIDENT_ID="incident-$(date +%s)"
+        INCIDENT_FILE="data/incidents/${INCIDENT_ID}.json"
+        mkdir -p data/incidents
+        
+        cat > "$INCIDENT_FILE" << EOF
+        {
+          "id": "$INCIDENT_ID",
+          "title": "${{ inputs.incident_title }}",
+          "description": "${{ inputs.incident_description }}",
+          "status": "investigating",
+          "severity": "${{ inputs.severity }}",
+          "created_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+          "updated_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+          "services_affected": "${{ inputs.services_affected }}",
+          "auto_created": false,
+          "created_by": "${{ github.actor }}"
+        }
+        EOF
+        
+        echo "INCIDENT_FILE=$INCIDENT_FILE" >> $GITHUB_ENV
+        echo "INCIDENT_ID=$INCIDENT_ID" >> $GITHUB_ENV
+    
+    - name: Process issue-based incident
+      if: github.event_name == 'issues'
+      run: |
+        ISSUE_NUMBER="${{ github.event.issue.number }}"
+        ISSUE_TITLE="${{ github.event.issue.title }}"
+        ISSUE_BODY="${{ github.event.issue.body }}"
+        ISSUE_STATE="${{ github.event.issue.state }}"
+        
+        # Check if this is an incident issue (has 'incident' label)
+        LABELS='${{ toJson(github.event.issue.labels) }}'
+        HAS_INCIDENT_LABEL=$(echo "$LABELS" | jq -r '.[] | select(.name=="incident") | .name')
+        
+        if [ "$HAS_INCIDENT_LABEL" != "incident" ]; then
+          echo "Issue is not labeled as an incident, skipping"
+          exit 0
+        fi
+        
+        echo "Processing incident issue #$ISSUE_NUMBER"
+        
+        INCIDENT_ID="incident-issue-$ISSUE_NUMBER"
+        INCIDENT_FILE="data/incidents/${INCIDENT_ID}.json"
+        mkdir -p data/incidents
+        
+        # Determine severity from labels
+        SEVERITY="medium"
+        if echo "$LABELS" | grep -q '"critical"'; then
+          SEVERITY="critical"
+        elif echo "$LABELS" | grep -q '"high"'; then
+          SEVERITY="high"
+        elif echo "$LABELS" | grep -q '"low"'; then
+          SEVERITY="low"
+        fi
+        
+        # Determine status
+        STATUS="investigating"
+        if [ "$ISSUE_STATE" = "closed" ]; then
+          STATUS="resolved"
+        elif echo "$LABELS" | grep -q '"in-progress"'; then
+          STATUS="fixing"
+        fi
+        
+        cat > "$INCIDENT_FILE" << EOF
+        {
+          "id": "$INCIDENT_ID",
+          "title": "$ISSUE_TITLE",
+          "description": "$ISSUE_BODY",
+          "status": "$STATUS",
+          "severity": "$SEVERITY",
+          "created_at": "${{ github.event.issue.created_at }}",
+          "updated_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+          "github_issue": $ISSUE_NUMBER,
+          "auto_created": false,
+          "created_by": "${{ github.event.issue.user.login }}"
+        }
+        EOF
+        
+        echo "INCIDENT_FILE=$INCIDENT_FILE" >> $GITHUB_ENV
+        echo "INCIDENT_ID=$INCIDENT_ID" >> $GITHUB_ENV
+    
+    - name: Update status.json with incident
+      if: env.INCIDENT_ID != ''
+      run: |
+        echo "Updating status.json with incident data"
+        
+        node -e "
+          const fs = require('fs');
+          const statusFile = 'data/status.json';
+          const incidentFile = process.env.INCIDENT_FILE;
+          
+          // Read current status
+          let status;
+          try {
+            status = JSON.parse(fs.readFileSync(statusFile, 'utf8'));
+          } catch (error) {
+            console.log('Creating new status file');
+            status = {
+              last_updated: new Date().toISOString(),
+              overall_status: { status: 'operational', message: 'All systems operational' },
+              services: [],
+              metrics: {},
+              recent_deployments: [],
+              incidents: []
+            };
+          }
+          
+          // Read incident data
+          const incident = JSON.parse(fs.readFileSync(incidentFile, 'utf8'));
+          
+          // Update incidents array
+          status.incidents = status.incidents || [];
+          
+          // Remove existing incident with same ID (for updates)
+          status.incidents = status.incidents.filter(i => i.id !== incident.id);
+          
+          // Add incident if not resolved or if recently resolved
+          const incidentAge = Date.now() - new Date(incident.created_at).getTime();
+          const sevenDays = 7 * 24 * 60 * 60 * 1000;
+          
+          if (incident.status !== 'resolved' || incidentAge < sevenDays) {
+            status.incidents.unshift(incident);
+          }
+          
+          // Keep only last 10 incidents
+          status.incidents = status.incidents.slice(0, 10);
+          
+          // Update overall status if critical incident
+          if (incident.severity === 'critical' && incident.status !== 'resolved') {
+            status.overall_status = {
+              status: 'degraded',
+              message: \`Critical incident: \${incident.title}\`
+            };
+          }
+          
+          // Update metrics
+          const resolvedIncidents = status.incidents.filter(i => i.status === 'resolved').length;
+          status.metrics.incidents_resolved = resolvedIncidents.toString();
+          
+          status.last_updated = new Date().toISOString();
+          
+          fs.writeFileSync(statusFile, JSON.stringify(status, null, 2));
+          console.log('Status updated with incident data');
+        "
+    
+    - name: Commit changes
+      if: env.INCIDENT_ID != ''
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "Incident Manager"
+        git add data/
+        
+        if git diff --staged --quiet; then
+          echo "No changes to commit"
+        else
+          git commit -m "Update incident: ${{ env.INCIDENT_ID }} - $(date -u +%Y-%m-%d\ %H:%M\ UTC)"
+          git push
+        fi
+    
+    - name: Deploy to GitHub Pages
+      if: env.INCIDENT_ID != ''
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: .
+        exclude_assets: '.github,node_modules,*.md,scripts'
+    
+    - name: Create incident from repository dispatch
+      if: github.event_name == 'repository_dispatch' && github.event.action == 'create-incident'
+      run: |
+        echo "Creating incident from repository dispatch"
+        
+        INCIDENT_ID="incident-$(date +%s)"
+        INCIDENT_FILE="data/incidents/${INCIDENT_ID}.json"
+        mkdir -p data/incidents
+        
+        # Extract data from client_payload
+        TITLE='${{ github.event.client_payload.title }}'
+        DESCRIPTION='${{ github.event.client_payload.description }}'
+        SERVICE='${{ github.event.client_payload.service }}'
+        SEVERITY='${{ github.event.client_payload.severity }}'
+        DEPLOYMENT_ID='${{ github.event.client_payload.deployment_id }}'
+        COMMIT_SHA='${{ github.event.client_payload.commit_sha }}'
+        
+        cat > "$INCIDENT_FILE" << EOF
+        {
+          "id": "$INCIDENT_ID",
+          "title": "$TITLE",
+          "description": "$DESCRIPTION",
+          "status": "investigating",
+          "severity": "$SEVERITY",
+          "created_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+          "updated_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+          "services_affected": "$SERVICE",
+          "auto_created": true,
+          "deployment_id": "$DEPLOYMENT_ID",
+          "commit_sha": "$COMMIT_SHA",
+          "created_by": "automated-system"
+        }
+        EOF
+        
+        echo "INCIDENT_FILE=$INCIDENT_FILE" >> $GITHUB_ENV
+        echo "INCIDENT_ID=$INCIDENT_ID" >> $GITHUB_ENV
+        
+        echo "Created incident: $INCIDENT_ID for $SERVICE deployment failure"
+    
+    - name: Trigger custom domain deployment
+      if: env.INCIDENT_ID != ''
+      run: |
+        echo "Triggering custom domain deployment to update status.wiba.dev"
+        
+        curl -s -X POST \
+          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          -H "Accept: application/vnd.github.v3+json" \
+          "https://api.github.com/repos/WIBA-ORG/wiba-status/actions/workflows/deploy-to-custom-domain.yml/dispatches" \
+          -d '{"ref":"main","inputs":{"reason":"incident-update"}}' || echo "Custom domain deployment trigger failed"
+    
+    - name: Summary
+      if: env.INCIDENT_ID != ''
+      run: |
+        echo "### 🚨 Incident Management Complete" >> $GITHUB_STEP_SUMMARY
+        echo "**Incident ID:** ${{ env.INCIDENT_ID }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Action:** ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Primary URL:** https://status.wiba.dev" >> $GITHUB_STEP_SUMMARY
+        echo "**Backup URL:** https://wiba-org.github.io/wiba-status" >> $GITHUB_STEP_SUMMARY

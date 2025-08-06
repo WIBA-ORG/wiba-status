@@ -1,0 +1,511 @@
+name: Monitor System Status
+
+on:
+  schedule:
+    # Run every 5 minutes
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+  # Trigger when other repos update status
+  repository_dispatch:
+    types: [deployment-update, service-update]
+
+env:
+  STATUS_FILE: data/status.json
+  WIBA_DOMAIN: wiba.dev
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+    
+    - name: Install dependencies
+      run: |
+        npm init -y
+        npm install axios@1.6.2
+    
+    - name: Create monitoring script
+      run: |
+        cat > monitor.js << 'EOF'
+        const fs = require('fs');
+        const axios = require('axios');
+        
+        const SERVICES = [
+          {
+            name: 'WIBA Platform',
+            description: 'Backend API and core services',
+            url: 'https://wiba.dev/api/health',
+            timeout: 30000,
+            expectedContent: 'success',
+            critical: true,
+            category: 'core'
+          },
+          {
+            name: 'WIBA Web Interface',
+            description: 'Frontend website and user interface',
+            url: 'https://wiba.dev/',
+            timeout: 15000,
+            expectedContent: 'WIBA',
+            critical: true,
+            category: 'core'
+          },
+          {
+            name: 'vLLM Service',
+            description: 'AI model inference service (port 8000)',
+            url: 'https://wiba.dev/api/health',
+            timeout: 60000,
+            expectedContent: 'vllm',
+            critical: true,
+            category: 'ai',
+            healthCheck: 'vllm_models'
+          },
+          {
+            name: 'Database',
+            description: 'Primary database connectivity',
+            url: 'https://wiba.dev/api/health',
+            timeout: 10000,
+            expectedContent: 'database',
+            critical: true,
+            category: 'storage',
+            healthCheck: 'database_status'
+          },
+          {
+            name: 'API - Detect',
+            description: 'Detection API endpoint',
+            url: 'https://wiba.dev/api/detect',
+            timeout: 45000,
+            method: 'POST',
+            data: { text: 'test' },
+            critical: false,
+            category: 'api'
+          },
+          {
+            name: 'API - Extract',
+            description: 'Extraction API endpoint', 
+            url: 'https://wiba.dev/api/extract',
+            timeout: 45000,
+            method: 'POST',
+            data: { text: 'test' },
+            critical: false,
+            category: 'api'
+          },
+          {
+            name: 'API - Stance',
+            description: 'Stance analysis API endpoint',
+            url: 'https://wiba.dev/api/stance',
+            timeout: 45000,
+            method: 'POST', 
+            data: { text: 'test' },
+            critical: false,
+            category: 'api'
+          },
+          {
+            name: 'Status Page',
+            description: 'This status page service',
+            url: 'https://status.wiba.dev/health',
+            timeout: 10000,
+            critical: false,
+            category: 'monitoring'
+          }
+        ];
+        
+        async function checkService(service) {
+          const startTime = Date.now();
+          
+          try {
+            const config = {
+              method: service.method || 'GET',
+              url: service.url,
+              timeout: service.timeout,
+              validateStatus: (status) => status < 500, // Allow 4xx but not 5xx
+              headers: {
+                'User-Agent': 'WIBA-Status-Monitor/1.0',
+                'Accept': 'application/json, text/html, */*'
+              }
+            };
+            
+            if (service.data && service.method === 'POST') {
+              config.data = service.data;
+              config.headers['Content-Type'] = 'application/json';
+            }
+            
+            const response = await axios(config);
+            const responseTime = Date.now() - startTime;
+            
+            let status = 'operational';
+            let message = null;
+            let healthDetails = {};
+            
+            // Check response status
+            if (response.status >= 500) {
+              status = 'down';
+              message = `HTTP ${response.status} error`;
+            } else if (response.status >= 400) {
+              // For APIs, 400 errors might be expected (validation errors)
+              if (service.critical) {
+                status = 'degraded';
+                message = `HTTP ${response.status} - may indicate issues`;
+              } else {
+                status = 'operational'; // API validation errors are normal
+              }
+            }
+            
+            // Enhanced health checks for specific services
+            if (service.healthCheck && response.data) {
+              const healthData = response.data;
+              
+              if (service.healthCheck === 'vllm_models' && healthData.vllm) {
+                healthDetails.vllm_status = healthData.vllm.status;
+                healthDetails.models_loaded = healthData.vllm.models_count || 0;
+                
+                if (healthData.vllm.status !== 'ready') {
+                  status = 'degraded';
+                  message = 'vLLM service not ready';
+                }
+              }
+              
+              if (service.healthCheck === 'database_status' && healthData.database) {
+                healthDetails.db_status = healthData.database.status;
+                healthDetails.connections = healthData.database.connections;
+                
+                if (healthData.database.status !== 'connected') {
+                  status = 'down';
+                  message = 'Database connection failed';
+                }
+              }
+            }
+            
+            // Check expected content if specified
+            if (service.expectedContent && status === 'operational') {
+              const responseText = JSON.stringify(response.data) + JSON.stringify(response.headers);
+              if (!responseText.toLowerCase().includes(service.expectedContent.toLowerCase())) {
+                status = 'degraded';
+                message = 'Unexpected response content';
+              }
+            }
+            
+            // Performance check with category-specific thresholds
+            const performanceThreshold = service.category === 'ai' ? 15000 : 
+                                        service.category === 'storage' ? 5000 : 10000;
+            
+            if (responseTime > performanceThreshold && status === 'operational') {
+              status = 'degraded';
+              message = `Slow response time (${responseTime}ms)`;
+            }
+            
+            return {
+              ...service,
+              status,
+              response_time: `${responseTime}ms`,
+              message,
+              last_checked: new Date().toISOString(),
+              http_status: response.status,
+              health_details: healthDetails
+            };
+            
+          } catch (error) {
+            const responseTime = Date.now() - startTime;
+            
+            let status = 'down';
+            let message = 'Service unreachable';
+            
+            if (error.code === 'ENOTFOUND') {
+              message = 'DNS resolution failed';
+            } else if (error.code === 'ECONNREFUSED') {
+              message = 'Connection refused';
+            } else if (error.code === 'ETIMEDOUT') {
+              message = `Request timeout (>${service.timeout}ms)`;
+            } else if (error.response) {
+              message = `HTTP ${error.response.status} error`;
+              if (error.response.status < 500 && !service.critical) {
+                status = 'degraded'; // Non-critical services can be degraded on 4xx
+              }
+            }
+            
+            return {
+              ...service,
+              status,
+              response_time: `${responseTime}ms`,
+              message,
+              last_checked: new Date().toISOString(),
+              error: error.message
+            };
+          }
+        }
+        
+        async function getHistoricalData() {
+          try {
+            const existingData = JSON.parse(fs.readFileSync('data/status.json', 'utf8'));
+            return {
+              metrics: existingData.metrics || {},
+              recent_deployments: existingData.recent_deployments || [],
+              incidents: existingData.incidents || []
+            };
+          } catch (error) {
+            console.log('No existing data found, starting fresh');
+            return {
+              metrics: {
+                total_uptime: '99.9%',
+                avg_response_time: '0ms',
+                total_deployments: '0',
+                success_rate: '100%',
+                active_services: '0',
+                incidents_resolved: '0'
+              },
+              recent_deployments: [],
+              incidents: []
+            };
+          }
+        }
+        
+        async function updateUptimeMetrics(services, historicalData) {
+          const operationalCount = services.filter(s => s.status === 'operational').length;
+          const totalServices = services.length;
+          const currentUptime = ((operationalCount / totalServices) * 100).toFixed(1) + '%';
+          
+          const avgResponseTime = Math.round(
+            services.reduce((sum, s) => {
+              const time = parseInt(s.response_time.replace('ms', '')) || 0;
+              return sum + time;
+            }, 0) / services.length
+          );
+          
+          return {
+            ...historicalData.metrics,
+            total_uptime: currentUptime,
+            avg_response_time: `${avgResponseTime}ms`,
+            active_services: operationalCount.toString()
+          };
+        }
+        
+        function determineOverallStatus(services) {
+          const criticalServices = services.filter(s => s.critical);
+          const downServices = services.filter(s => s.status === 'down');
+          const degradedServices = services.filter(s => s.status === 'degraded');
+          const criticalDown = criticalServices.filter(s => s.status === 'down');
+          const criticalDegraded = criticalServices.filter(s => s.status === 'degraded');
+          
+          if (criticalDown.length > 0) {
+            return {
+              status: 'down',
+              message: `Critical services down: ${criticalDown.map(s => s.name).join(', ')}`
+            };
+          }
+          
+          if (downServices.length > 0 || criticalDegraded.length > 0) {
+            const issues = [...downServices, ...criticalDegraded];
+            return {
+              status: 'degraded', 
+              message: `Service issues detected: ${issues.map(s => s.name).join(', ')}`
+            };
+          }
+          
+          if (degradedServices.length > 0) {
+            return {
+              status: 'operational',
+              message: `All critical systems operational. Minor issues: ${degradedServices.map(s => s.name).join(', ')}`
+            };
+          }
+          
+          return {
+            status: 'operational',
+            message: 'All systems operational'
+          };
+        }
+        
+        async function main() {
+          console.log('🔍 Starting system health check...');
+          
+          const historicalData = await getHistoricalData();
+          const serviceResults = [];
+          
+          // Check services in parallel with limited concurrency
+          const concurrency = 3;
+          for (let i = 0; i < SERVICES.length; i += concurrency) {
+            const batch = SERVICES.slice(i, i + concurrency);
+            const batchResults = await Promise.all(batch.map(checkService));
+            serviceResults.push(...batchResults);
+            
+            // Small delay between batches to avoid overwhelming the server
+            if (i + concurrency < SERVICES.length) {
+              await new Promise(resolve => setTimeout(resolve, 2000));
+            }
+          }
+          
+          const overallStatus = determineOverallStatus(serviceResults);
+          const updatedMetrics = await updateUptimeMetrics(serviceResults, historicalData);
+          
+          const statusData = {
+            last_updated: new Date().toISOString(),
+            overall_status: overallStatus,
+            services: serviceResults,
+            metrics: updatedMetrics,
+            recent_deployments: historicalData.recent_deployments.slice(0, 10), // Keep last 10
+            incidents: historicalData.incidents.slice(0, 5), // Keep last 5
+            system_info: {
+              version: '1.0.0',
+              environment: 'production',
+              region: 'self-hosted',
+              monitoring_interval: '5m',
+              monitor_version: process.env.GITHUB_RUN_ID || 'local',
+              deployment_urls: {
+                primary: 'https://status.wiba.dev',
+                backup: 'https://wiba-org.github.io/wiba-status'
+              },
+              last_deployment: null // Will be updated by deployment hooks
+            }
+          };
+          
+          // Write status data
+          fs.writeFileSync('data/status.json', JSON.stringify(statusData, null, 2));
+          
+          // Log summary
+          console.log('\n📊 Status Check Complete:');
+          console.log(`Overall Status: ${overallStatus.status.toUpperCase()}`);
+          console.log(`Services Checked: ${serviceResults.length}`);
+          serviceResults.forEach(service => {
+            const icon = service.status === 'operational' ? '✅' : 
+                        service.status === 'degraded' ? '⚠️' : '❌';
+            console.log(`  ${icon} ${service.name}: ${service.status} (${service.response_time})`);
+            if (service.message) {
+              console.log(`     ${service.message}`);
+            }
+          });
+          
+          // Set output for GitHub Actions
+          if (process.env.GITHUB_OUTPUT) {
+            const fs = require('fs');
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, `overall_status=${overallStatus.status}\n`);
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, `services_down=${serviceResults.filter(s => s.status === 'down').length}\n`);
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, `services_degraded=${serviceResults.filter(s => s.status === 'degraded').length}\n`);
+          }
+        }
+        
+        main().catch(error => {
+          console.error('❌ Monitoring failed:', error);
+          process.exit(1);
+        });
+        EOF
+    
+    - name: Run system health check
+      id: monitor
+      run: node monitor.js
+    
+    - name: Commit status updates
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "Status Monitor"
+        git add data/status.json
+        
+        if git diff --staged --quiet; then
+          echo "No changes to commit"
+        else
+          git commit -m "Update system status - $(date -u +%Y-%m-%d\ %H:%M\ UTC)"
+          git push
+        fi
+    
+    - name: Create incident if critical services are down
+      if: steps.monitor.outputs.overall_status == 'down'
+      run: |
+        echo "🚨 Critical system outage detected!"
+        
+        # Create an incident entry
+        INCIDENT_ID="incident-$(date +%s)"
+        INCIDENT_FILE="data/incidents/${INCIDENT_ID}.json"
+        mkdir -p data/incidents
+        
+        cat > "$INCIDENT_FILE" << EOF
+        {
+          "id": "$INCIDENT_ID",
+          "title": "System Outage - Critical Services Down",
+          "description": "Automated monitoring detected critical service failures. Investigation in progress.",
+          "status": "investigating",
+          "severity": "critical",
+          "created_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+          "updated_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+          "services_affected": ${{ steps.monitor.outputs.services_down }},
+          "auto_created": true
+        }
+        EOF
+        
+        echo "Created incident file: $INCIDENT_FILE"
+    
+    - name: Update GitHub deployment status
+      if: github.event.action == 'deployment-update'
+      run: |
+        echo "📝 Processing deployment status update from ${{ github.event.client_payload.repository }}"
+        
+        # Extract deployment info from payload
+        DEPLOYMENT_DATA='${{ toJson(github.event.client_payload) }}'
+        echo "$DEPLOYMENT_DATA" | jq '.'
+        
+        # Update the recent_deployments in status.json
+        node -e "
+          const fs = require('fs');
+          const payload = $DEPLOYMENT_DATA;
+          const statusFile = 'data/status.json';
+          
+          let status = JSON.parse(fs.readFileSync(statusFile, 'utf8'));
+          
+          const deployment = {
+            deployment_id: payload.deployment_id,
+            service: payload.service,
+            status: payload.status,
+            deployed_at: payload.deployed_at,
+            deployed_by: payload.deployed_by,
+            commit_sha: payload.commit_sha,
+            duration: payload.duration
+          };
+          
+          status.recent_deployments = status.recent_deployments || [];
+          status.recent_deployments.unshift(deployment);
+          status.recent_deployments = status.recent_deployments.slice(0, 10);
+          
+          // Update success rate metric
+          const recentDeployments = status.recent_deployments.slice(0, 20);
+          const successfulDeployments = recentDeployments.filter(d => d.status === 'success').length;
+          const successRate = recentDeployments.length > 0 ? 
+            ((successfulDeployments / recentDeployments.length) * 100).toFixed(1) + '%' : '100%';
+          
+          status.metrics.success_rate = successRate;
+          status.metrics.total_deployments = (parseInt(status.metrics.total_deployments) + 1).toString();
+          
+          fs.writeFileSync(statusFile, JSON.stringify(status, null, 2));
+          console.log('Updated deployment status:', deployment);
+        "
+    
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      if: always()
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: .
+        exclude_assets: '.github,node_modules,monitor.js,package*.json,*.md'
+    
+    - name: Notify on status change
+      if: steps.monitor.outputs.overall_status != 'operational'
+      run: |
+        echo "🔔 System status alert: ${{ steps.monitor.outputs.overall_status }}"
+        echo "Services down: ${{ steps.monitor.outputs.services_down }}"
+        echo "Services degraded: ${{ steps.monitor.outputs.services_degraded }}"
+        
+        # Here you could add webhook notifications if needed
+        # For now, we'll create a summary for the workflow
+        echo "### 🚨 System Status Alert" >> $GITHUB_STEP_SUMMARY
+        echo "**Overall Status:** ${{ steps.monitor.outputs.overall_status }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Services Down:** ${{ steps.monitor.outputs.services_down }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Services Degraded:** ${{ steps.monitor.outputs.services_degraded }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Timestamp:** $(date -u)" >> $GITHUB_STEP_SUMMARY

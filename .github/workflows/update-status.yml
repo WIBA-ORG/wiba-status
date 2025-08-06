@@ -1,0 +1,179 @@
+name: Update Status from External Trigger
+
+on:
+  repository_dispatch:
+    types: 
+      - deployment-update
+      - service-update
+      - incident-update
+  workflow_call:
+    inputs:
+      service:
+        required: true
+        type: string
+      deployment_id:
+        required: false
+        type: string
+      status:
+        required: true
+        type: string
+      deployed_by:
+        required: false
+        type: string
+      commit_sha:
+        required: false
+        type: string
+      duration:
+        required: false
+        type: string
+
+jobs:
+  update-status:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Process deployment update
+      if: github.event.action == 'deployment-update' || github.event_name == 'workflow_call'
+      run: |
+        echo "📝 Processing deployment status update"
+        
+        # Extract data from either repository_dispatch or workflow_call
+        if [ "${{ github.event_name }}" = "workflow_call" ]; then
+          SERVICE="${{ inputs.service }}"
+          DEPLOYMENT_ID="${{ inputs.deployment_id }}"
+          STATUS="${{ inputs.status }}"
+          DEPLOYED_BY="${{ inputs.deployed_by }}"
+          COMMIT_SHA="${{ inputs.commit_sha }}"
+          DURATION="${{ inputs.duration }}"
+        else
+          SERVICE="${{ github.event.client_payload.service }}"
+          DEPLOYMENT_ID="${{ github.event.client_payload.deployment_id }}"
+          STATUS="${{ github.event.client_payload.status }}"
+          DEPLOYED_BY="${{ github.event.client_payload.deployed_by }}"
+          COMMIT_SHA="${{ github.event.client_payload.commit_sha }}"
+          DURATION="${{ github.event.client_payload.duration }}"
+          DEPLOYED_AT="${{ github.event.client_payload.deployed_at }}"
+        fi
+        
+        # Use current time if not provided
+        DEPLOYED_AT="${DEPLOYED_AT:-$(date -u +%Y-%m-%dT%H:%M:%SZ)}"
+        
+        echo "Updating deployment: $SERVICE #$DEPLOYMENT_ID - $STATUS"
+        
+        # Update status.json
+        node -e "
+          const fs = require('fs');
+          const statusFile = 'data/status.json';
+          
+          let status;
+          try {
+            status = JSON.parse(fs.readFileSync(statusFile, 'utf8'));
+          } catch (error) {
+            console.log('Creating new status file');
+            status = {
+              last_updated: new Date().toISOString(),
+              overall_status: { status: 'operational', message: 'All systems operational' },
+              services: [],
+              metrics: {
+                total_uptime: '100%',
+                avg_response_time: '0ms',
+                total_deployments: '0',
+                success_rate: '100%',
+                active_services: '0',
+                incidents_resolved: '0'
+              },
+              recent_deployments: [],
+              incidents: []
+            };
+          }
+          
+          // Add new deployment
+          const deployment = {
+            deployment_id: '$DEPLOYMENT_ID',
+            service: '$SERVICE',
+            status: '$STATUS',
+            deployed_at: '$DEPLOYED_AT',
+            deployed_by: '$DEPLOYED_BY',
+            commit_sha: '$COMMIT_SHA',
+            duration: '$DURATION'
+          };
+          
+          status.recent_deployments = status.recent_deployments || [];
+          status.recent_deployments.unshift(deployment);
+          status.recent_deployments = status.recent_deployments.slice(0, 10);
+          
+          // Update metrics
+          const totalDeployments = parseInt(status.metrics.total_deployments || '0') + 1;
+          status.metrics.total_deployments = totalDeployments.toString();
+          
+          // Calculate success rate from recent deployments
+          const recentDeployments = status.recent_deployments.slice(0, 20);
+          const successfulDeployments = recentDeployments.filter(d => d.status === 'success').length;
+          const successRate = recentDeployments.length > 0 ? 
+            ((successfulDeployments / recentDeployments.length) * 100).toFixed(1) + '%' : '100%';
+          status.metrics.success_rate = successRate;
+          
+          // Update timestamp
+          status.last_updated = new Date().toISOString();
+          
+          fs.writeFileSync(statusFile, JSON.stringify(status, null, 2));
+          console.log('Deployment status updated successfully');
+        "
+    
+    - name: Process service update
+      if: github.event.action == 'service-update'
+      run: |
+        echo "🔍 Processing service health update"
+        echo "Service: ${{ github.event.client_payload.service }}"
+        echo "Trigger: ${{ github.event.client_payload.trigger }}"
+        
+        # Trigger immediate health check
+        echo "Triggering immediate monitoring run..."
+    
+    - name: Run immediate health check
+      if: github.event.action == 'service-update'
+      uses: ./.github/workflows/monitor-status.yml
+    
+    - name: Commit changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "Status Updater"
+        git add data/status.json
+        
+        if git diff --staged --quiet; then
+          echo "No changes to commit"
+        else
+          git commit -m "Update status from external trigger - $(date -u +%Y-%m-%d\ %H:%M\ UTC)"
+          git push
+        fi
+    
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      if: always()
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: .
+        exclude_assets: '.github,node_modules,*.md,scripts'
+    
+    - name: Summary
+      run: |
+        echo "### 📊 Status Update Complete" >> $GITHUB_STEP_SUMMARY
+        echo "**Event:** ${{ github.event.action }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Timestamp:** $(date -u)" >> $GITHUB_STEP_SUMMARY
+        
+        if [ "${{ github.event.action }}" = "deployment-update" ]; then
+          echo "**Service:** ${{ github.event.client_payload.service }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Deployment:** #${{ github.event.client_payload.deployment_id }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Status:** ${{ github.event.client_payload.status }}" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        echo "**Status Page:** https://wiba-org.github.io/wiba-status" >> $GITHUB_STEP_SUMMARY
