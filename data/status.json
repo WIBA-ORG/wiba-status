@@ -1,107 +1,147 @@
 {
-  "last_updated": "2024-08-06T22:30:00Z",
+  "last_updated": "2025-08-06T22:46:19.893Z",
   "overall_status": {
-    "status": "operational",
-    "message": "WIBA Status Page initialized - monitoring will begin shortly. First health check in progress."
+    "status": "degraded",
+    "message": "Service issues detected: vLLM Service"
   },
   "services": [
     {
       "name": "WIBA Platform",
       "description": "Backend API and core services",
       "url": "https://wiba.dev/api/health",
-      "status": "unknown",
-      "response_time": "0ms",
-      "last_checked": "2024-08-06T22:30:00Z",
+      "timeout": 30000,
+      "expectedContent": "success",
       "critical": true,
       "category": "core",
-      "message": "Initial setup - first health check pending"
+      "status": "operational",
+      "response_time": "561ms",
+      "message": null,
+      "last_checked": "2025-08-06T22:46:14.561Z",
+      "http_status": 200,
+      "health_details": {}
     },
     {
       "name": "WIBA Web Interface",
       "description": "Frontend website and user interface",
       "url": "https://wiba.dev/",
-      "status": "unknown",
-      "response_time": "0ms",
-      "last_checked": "2024-08-06T22:30:00Z",
+      "timeout": 15000,
+      "expectedContent": "WIBA",
       "critical": true,
       "category": "core",
-      "message": "Initial setup - first health check pending"
+      "status": "operational",
+      "response_time": "699ms",
+      "message": null,
+      "last_checked": "2025-08-06T22:46:14.732Z",
+      "http_status": 200,
+      "health_details": {}
     },
     {
       "name": "vLLM Service",
       "description": "AI model inference service (port 8000)",
       "url": "https://wiba.dev/api/health",
-      "status": "unknown",
-      "response_time": "0ms",
-      "last_checked": "2024-08-06T22:30:00Z",
+      "timeout": 60000,
+      "expectedContent": "vllm",
       "critical": true,
       "category": "ai",
       "healthCheck": "vllm_models",
-      "message": "Initial setup - first health check pending"
+      "status": "degraded",
+      "response_time": "527ms",
+      "message": "Unexpected response content",
+      "last_checked": "2025-08-06T22:46:14.560Z",
+      "http_status": 200,
+      "health_details": {}
     },
     {
       "name": "Database",
       "description": "Primary database connectivity",
       "url": "https://wiba.dev/api/health",
-      "status": "unknown",
-      "response_time": "0ms",
-      "last_checked": "2024-08-06T22:30:00Z",
+      "timeout": 10000,
+      "expectedContent": "database",
       "critical": true,
       "category": "storage",
       "healthCheck": "database_status",
-      "message": "Initial setup - first health check pending"
+      "status": "operational",
+      "response_time": "559ms",
+      "message": null,
+      "last_checked": "2025-08-06T22:46:17.294Z",
+      "http_status": 200,
+      "health_details": {}
     },
     {
       "name": "API - Detect",
       "description": "Detection API endpoint",
       "url": "https://wiba.dev/api/detect",
-      "status": "unknown",
-      "response_time": "0ms",
-      "last_checked": "2024-08-06T22:30:00Z",
+      "timeout": 45000,
+      "method": "POST",
+      "data": {
+        "text": "test"
+      },
       "critical": false,
       "category": "api",
-      "message": "Initial setup - first health check pending"
+      "status": "operational",
+      "response_time": "502ms",
+      "message": null,
+      "last_checked": "2025-08-06T22:46:17.239Z",
+      "http_status": 422,
+      "health_details": {}
     },
     {
       "name": "API - Extract",
       "description": "Extraction API endpoint",
       "url": "https://wiba.dev/api/extract",
-      "status": "unknown",
-      "response_time": "0ms",
-      "last_checked": "2024-08-06T22:30:00Z",
+      "timeout": 45000,
+      "method": "POST",
+      "data": {
+        "text": "test"
+      },
       "critical": false,
       "category": "api",
-      "message": "Initial setup - first health check pending"
+      "status": "operational",
+      "response_time": "226ms",
+      "message": null,
+      "last_checked": "2025-08-06T22:46:17.032Z",
+      "http_status": 422,
+      "health_details": {}
     },
     {
       "name": "API - Stance",
       "description": "Stance analysis API endpoint",
       "url": "https://wiba.dev/api/stance",
-      "status": "unknown",
-      "response_time": "0ms",
-      "last_checked": "2024-08-06T22:30:00Z",
+      "timeout": 45000,
+      "method": "POST",
+      "data": {
+        "text": "test"
+      },
       "critical": false,
       "category": "api",
-      "message": "Initial setup - first health check pending"
+      "status": "operational",
+      "response_time": "430ms",
+      "message": null,
+      "last_checked": "2025-08-06T22:46:19.727Z",
+      "http_status": 422,
+      "health_details": {}
     },
     {
       "name": "Status Page",
       "description": "This status page service",
       "url": "https://status.wiba.dev/health",
-      "status": "operational",
-      "response_time": "0ms",
-      "last_checked": "2024-08-06T22:30:00Z",
+      "timeout": 10000,
       "critical": false,
       "category": "monitoring",
-      "message": "Status page is operational and ready for monitoring"
+      "status": "operational",
+      "response_time": "593ms",
+      "message": null,
+      "last_checked": "2025-08-06T22:46:19.892Z",
+      "http_status": 200,
+      "health_details": {}
     }
   ],
   "metrics": {
-    "total_uptime": "99.9%",
-    "avg_response_time": "0ms",
+    "total_uptime": "87.5%",
+    "avg_response_time": "512ms",
     "total_deployments": "0",
     "success_rate": "100%",
-    "active_services": "1",
+    "active_services": "7",
     "incidents_resolved": "0"
   },
   "recent_deployments": [
@@ -121,19 +161,11 @@
     "environment": "production",
     "region": "self-hosted",
     "monitoring_interval": "5m",
-    "monitor_version": "initial",
+    "monitor_version": "16790395694",
     "deployment_urls": {
       "primary": "https://status.wiba.dev",
       "backup": "https://wiba-org.github.io/wiba-status"
     },
-    "last_deployment": {
-      "deployment_id": "initial-setup",
-      "service": "WIBA Status Page",
-      "status": "success",
-      "deployed_at": "2024-08-06T22:30:00Z",
-      "deployed_by": "armaniii",
-      "commit_sha": "initial-commit",
-      "duration": "N/A"
-    }
+    "last_deployment": null
   }
 }
