@@ -1,8 +1,8 @@
 # WIBA Status Page
 
-Automated status monitoring for WIBA platform services hosted on GitHub Pages.
+Automated status monitoring for WIBA platform services.
 
-🔗 **Live Status Page**: [wiba-org.github.io/wiba-status](https://wiba-org.github.io/wiba-status)
+🔗 **Live Status Page**: [status.wiba.dev](https://status.wiba.dev)
 
 ## Services Monitored
 

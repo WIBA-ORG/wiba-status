@@ -268,5 +268,4 @@ jobs:
         echo "### 🚨 Incident Management Complete" >> $GITHUB_STEP_SUMMARY
         echo "**Incident ID:** ${{ env.INCIDENT_ID }}" >> $GITHUB_STEP_SUMMARY
         echo "**Action:** ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
-        echo "**Primary URL:** https://status.wiba.dev" >> $GITHUB_STEP_SUMMARY
-        echo "**Backup URL:** https://wiba-org.github.io/wiba-status" >> $GITHUB_STEP_SUMMARY
+        echo "**Status URL:** https://status.wiba.dev" >> $GITHUB_STEP_SUMMARY

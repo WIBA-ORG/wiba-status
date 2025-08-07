@@ -284,6 +284,5 @@ Most DNS providers support similar A record configuration:
 - [GitHub Actions Documentation](https://docs.github.com/en/actions)
 - [DNS Configuration Guide](https://developers.cloudflare.com/dns/)
 
-**Status Page URLs:**
+**Status Page URL:**
 - 🔗 **Primary**: https://status.wiba.dev
-- 🔗 **Backup**: https://wiba-org.github.io/wiba-status

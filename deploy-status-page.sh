@@ -139,8 +139,7 @@ setup_web_directory() {
     "region": "self-hosted",
     "monitoring_interval": "5m",
     "deployment_urls": {
-      "primary": "https://status.wiba.dev",
-      "backup": "https://wiba-org.github.io/wiba-status"
+      "primary": "https://status.wiba.dev"
     }
   }
 }
@@ -327,7 +326,6 @@ Features:
 
 Deployment:
 - Primary: https://status.wiba.dev
-- Backup: https://wiba-org.github.io/wiba-status
 - Monitoring: Every 5 minutes via GitHub Actions
 - Updates: Real-time via deployment hooks
 
@@ -378,7 +376,6 @@ display_summary() {
     echo
     info "📊 Status Page URLs:"
     info "  Primary:    https://$DOMAIN"
-    info "  Backup:     https://wiba-org.github.io/wiba-status"
     info "  Local:      http://$DOMAIN (if DNS configured)"
     info "  Health:     http://$DOMAIN/health"
     echo
