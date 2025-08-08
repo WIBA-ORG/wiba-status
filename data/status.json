@@ -1,8 +1,8 @@
 {
-  "last_updated": "2025-08-08T00:57:46.789Z",
+  "last_updated": "2025-08-08T03:06:31.015Z",
   "overall_status": {
-    "status": "degraded",
-    "message": "Service issues detected: API - Stance, WIBA Platform, WIBA Web Interface, vLLM Service, Database"
+    "status": "operational",
+    "message": "All systems operational"
   },
   "services": [
     {
@@ -13,11 +13,11 @@
       "expectedContent": "success",
       "critical": true,
       "category": "core",
-      "status": "degraded",
-      "response_time": "404ms",
-      "message": "HTTP 400 - may indicate issues",
-      "last_checked": "2025-08-08T00:57:41.942Z",
-      "http_status": 400,
+      "status": "operational",
+      "response_time": "833ms",
+      "message": null,
+      "last_checked": "2025-08-08T03:06:25.875Z",
+      "http_status": 200,
       "health_details": {}
     },
     {
@@ -28,11 +28,11 @@
       "expectedContent": "WIBA",
       "critical": true,
       "category": "core",
-      "status": "degraded",
-      "response_time": "376ms",
-      "message": "HTTP 400 - may indicate issues",
-      "last_checked": "2025-08-08T00:57:41.945Z",
-      "http_status": 400,
+      "status": "operational",
+      "response_time": "791ms",
+      "message": null,
+      "last_checked": "2025-08-08T03:06:25.864Z",
+      "http_status": 200,
       "health_details": {}
     },
     {
@@ -44,11 +44,11 @@
       "critical": true,
       "category": "ai",
       "healthCheck": "vllm_models",
-      "status": "degraded",
-      "response_time": "378ms",
-      "message": "HTTP 400 - may indicate issues",
-      "last_checked": "2025-08-08T00:57:41.948Z",
-      "http_status": 400,
+      "status": "operational",
+      "response_time": "693ms",
+      "message": null,
+      "last_checked": "2025-08-08T03:06:25.767Z",
+      "http_status": 200,
       "health_details": {}
     },
     {
@@ -60,11 +60,11 @@
       "critical": true,
       "category": "storage",
       "healthCheck": "database_status",
-      "status": "degraded",
+      "status": "operational",
       "response_time": "439ms",
-      "message": "HTTP 400 - may indicate issues",
-      "last_checked": "2025-08-08T00:57:44.389Z",
-      "http_status": 400,
+      "message": null,
+      "last_checked": "2025-08-08T03:06:28.317Z",
+      "http_status": 200,
       "health_details": {}
     },
     {
@@ -79,10 +79,10 @@
       "critical": false,
       "category": "api",
       "status": "operational",
-      "response_time": "426ms",
+      "response_time": "559ms",
       "message": null,
-      "last_checked": "2025-08-08T00:57:44.378Z",
-      "http_status": 400,
+      "last_checked": "2025-08-08T03:06:28.439Z",
+      "http_status": 422,
       "health_details": {}
     },
     {
@@ -97,10 +97,10 @@
       "critical": false,
       "category": "api",
       "status": "operational",
-      "response_time": "343ms",
+      "response_time": "444ms",
       "message": null,
-      "last_checked": "2025-08-08T00:57:44.386Z",
-      "http_status": 400,
+      "last_checked": "2025-08-08T03:06:28.387Z",
+      "http_status": 422,
       "health_details": {}
     },
     {
@@ -114,11 +114,12 @@
       },
       "critical": false,
       "category": "api",
-      "status": "down",
-      "response_time": "343ms",
-      "message": "HTTP 502 error",
-      "last_checked": "2025-08-08T00:57:46.735Z",
-      "error": "Request failed with status code 502"
+      "status": "operational",
+      "response_time": "453ms",
+      "message": null,
+      "last_checked": "2025-08-08T03:06:30.894Z",
+      "http_status": 422,
+      "health_details": {}
     },
     {
       "name": "Status Page",
@@ -128,19 +129,19 @@
       "critical": false,
       "category": "monitoring",
       "status": "operational",
-      "response_time": "394ms",
+      "response_time": "571ms",
       "message": null,
-      "last_checked": "2025-08-08T00:57:46.789Z",
+      "last_checked": "2025-08-08T03:06:31.015Z",
       "http_status": 200,
       "health_details": {}
     }
   ],
   "metrics": {
-    "total_uptime": "37.5%",
-    "avg_response_time": "388ms",
+    "total_uptime": "100.0%",
+    "avg_response_time": "598ms",
     "total_deployments": "0",
     "success_rate": "100%",
-    "active_services": "3",
+    "active_services": "8",
     "incidents_resolved": "0"
   },
   "recent_deployments": [
@@ -160,7 +161,7 @@
     "environment": "production",
     "region": "self-hosted",
     "monitoring_interval": "5m",
-    "monitor_version": "16819277849",
+    "monitor_version": "16820899184",
     "deployment_urls": {
       "primary": "https://status.wiba.dev",
       "backup": "https://wiba-org.github.io/wiba-status"
