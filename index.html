@@ -55,6 +55,43 @@
                 </div>
             </section>
 
+            <section class="api-performance">
+                <h2>API Performance</h2>
+                <div class="api-metrics-container">
+                    <div class="rps-meter-card">
+                        <div class="rps-meter">
+                            <div class="rps-value" id="current-rps">--</div>
+                            <div class="rps-label">Requests/sec</div>
+                            <div class="rps-indicator" id="rps-indicator"></div>
+                        </div>
+                        <div class="rps-total">
+                            <span class="total-label">Total API Calls:</span>
+                            <span class="total-value" id="total-api-calls">--</span>
+                        </div>
+                    </div>
+                    <div class="endpoint-breakdown">
+                        <h3>Endpoint Breakdown</h3>
+                        <div class="endpoint-metrics" id="endpoint-metrics">
+                            <div class="endpoint-item">
+                                <span class="endpoint-name">Detect:</span>
+                                <span class="endpoint-value" id="detect-rps">-- req/s</span>
+                            </div>
+                            <div class="endpoint-item">
+                                <span class="endpoint-name">Extract:</span>
+                                <span class="endpoint-value" id="extract-rps">-- req/s</span>
+                            </div>
+                            <div class="endpoint-item">
+                                <span class="endpoint-name">Stance:</span>
+                                <span class="endpoint-value" id="stance-rps">-- req/s</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="api-last-updated">
+                    Last updated: <span id="api-metrics-updated">Never</span>
+                </div>
+            </section>
+
             <section class="performance">
                 <h2>Performance Overview</h2>
                 <div class="performance-grid" id="performance-grid">
