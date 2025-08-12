@@ -1,8 +1,8 @@
 {
-  "last_updated": "2025-08-12T15:53:40.462Z",
+  "last_updated": "2025-08-12T16:18:14.027Z",
   "overall_status": {
-    "status": "down",
-    "message": "Critical services down: WIBA Platform, vLLM Service, Database"
+    "status": "operational",
+    "message": "All systems operational"
   },
   "services": [
     {
@@ -13,11 +13,12 @@
       "expectedContent": "success",
       "critical": true,
       "category": "core",
-      "status": "down",
-      "response_time": "30049ms",
-      "message": "Service unreachable",
-      "last_checked": "2025-08-12T15:52:15.672Z",
-      "error": "timeout of 30000ms exceeded"
+      "status": "operational",
+      "response_time": "693ms",
+      "message": null,
+      "last_checked": "2025-08-12T16:18:08.335Z",
+      "http_status": 200,
+      "health_details": {}
     },
     {
       "name": "WIBA Web Interface",
@@ -28,9 +29,9 @@
       "critical": true,
       "category": "core",
       "status": "operational",
-      "response_time": "782ms",
+      "response_time": "507ms",
       "message": null,
-      "last_checked": "2025-08-12T15:51:46.436Z",
+      "last_checked": "2025-08-12T16:18:08.182Z",
       "http_status": 200,
       "health_details": {}
     },
@@ -43,11 +44,12 @@
       "critical": true,
       "category": "ai",
       "healthCheck": "vllm_models",
-      "status": "down",
-      "response_time": "60033ms",
-      "message": "Service unreachable",
-      "last_checked": "2025-08-12T15:52:45.688Z",
-      "error": "timeout of 60000ms exceeded"
+      "status": "operational",
+      "response_time": "537ms",
+      "message": null,
+      "last_checked": "2025-08-12T16:18:08.213Z",
+      "http_status": 200,
+      "health_details": {}
     },
     {
       "name": "Database",
@@ -58,11 +60,12 @@
       "critical": true,
       "category": "storage",
       "healthCheck": "database_status",
-      "status": "down",
-      "response_time": "10083ms",
-      "message": "Service unreachable",
-      "last_checked": "2025-08-12T15:52:57.773Z",
-      "error": "timeout of 10000ms exceeded"
+      "status": "operational",
+      "response_time": "326ms",
+      "message": null,
+      "last_checked": "2025-08-12T16:18:10.663Z",
+      "http_status": 200,
+      "health_details": {}
     },
     {
       "name": "API - Detect",
@@ -75,11 +78,12 @@
       },
       "critical": false,
       "category": "api",
-      "status": "down",
-      "response_time": "45077ms",
-      "message": "Service unreachable",
-      "last_checked": "2025-08-12T15:53:32.769Z",
-      "error": "timeout of 45000ms exceeded"
+      "status": "operational",
+      "response_time": "330ms",
+      "message": null,
+      "last_checked": "2025-08-12T16:18:10.670Z",
+      "http_status": 422,
+      "health_details": {}
     },
     {
       "name": "API - Extract",
@@ -92,10 +96,10 @@
       },
       "critical": false,
       "category": "api",
-      "status": "degraded",
-      "response_time": "36233ms",
-      "message": "Slow response time (36233ms)",
-      "last_checked": "2025-08-12T15:53:23.993Z",
+      "status": "operational",
+      "response_time": "703ms",
+      "message": null,
+      "last_checked": "2025-08-12T16:18:11.065Z",
       "http_status": 422,
       "health_details": {}
     },
@@ -111,9 +115,9 @@
       "critical": false,
       "category": "api",
       "status": "operational",
-      "response_time": "326ms",
+      "response_time": "177ms",
       "message": null,
-      "last_checked": "2025-08-12T15:53:35.097Z",
+      "last_checked": "2025-08-12T16:18:13.245Z",
       "http_status": 422,
       "health_details": {}
     },
@@ -125,37 +129,37 @@
       "critical": false,
       "category": "monitoring",
       "status": "operational",
-      "response_time": "680ms",
+      "response_time": "493ms",
       "message": null,
-      "last_checked": "2025-08-12T15:53:35.453Z",
+      "last_checked": "2025-08-12T16:18:13.563Z",
       "http_status": 200,
       "health_details": {}
     }
   ],
   "metrics": {
-    "total_uptime": "37.5%",
-    "avg_response_time": "22908ms",
+    "total_uptime": "100.0%",
+    "avg_response_time": "471ms",
     "total_deployments": "0",
     "success_rate": "100%",
-    "active_services": "3",
+    "active_services": "8",
     "incidents_resolved": "0",
     "api_requests_per_second": 0,
-    "total_api_requests": 191,
+    "total_api_requests": 200,
     "api_endpoints": {
       "detect": {
-        "total": 26,
+        "total": 27,
         "rps": 0
       },
       "extract": {
-        "total": 26,
+        "total": 28,
         "rps": 0
       },
       "stance": {
-        "total": 26,
+        "total": 28,
         "rps": 0
       }
     },
-    "api_metrics_updated": "2025-08-12T15:36:01.439966+00:00"
+    "api_metrics_updated": "2025-08-12T16:18:13.953134+00:00"
   },
   "recent_deployments": [
     {
@@ -174,7 +178,7 @@
     "environment": "production",
     "region": "self-hosted",
     "monitoring_interval": "5m",
-    "monitor_version": "16913992680",
+    "monitor_version": "16914616602",
     "deployment_urls": {
       "primary": "https://status.wiba.dev",
       "backup": "https://wiba-org.github.io/wiba-status"
