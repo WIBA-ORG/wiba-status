@@ -1,8 +1,8 @@
 {
-  "last_updated": "2025-08-12T04:03:04.425Z",
+  "last_updated": "2025-08-12T04:38:23.039Z",
   "overall_status": {
-    "status": "operational",
-    "message": "All systems operational"
+    "status": "down",
+    "message": "Critical services down: WIBA Platform, WIBA Web Interface, vLLM Service, Database"
   },
   "services": [
     {
@@ -13,12 +13,11 @@
       "expectedContent": "success",
       "critical": true,
       "category": "core",
-      "status": "operational",
-      "response_time": "630ms",
-      "message": null,
-      "last_checked": "2025-08-12T04:02:59.404Z",
-      "http_status": 200,
-      "health_details": {}
+      "status": "down",
+      "response_time": "493ms",
+      "message": "HTTP 502 error",
+      "last_checked": "2025-08-12T04:38:18.276Z",
+      "error": "Request failed with status code 502"
     },
     {
       "name": "WIBA Web Interface",
@@ -28,12 +27,11 @@
       "expectedContent": "WIBA",
       "critical": true,
       "category": "core",
-      "status": "operational",
-      "response_time": "656ms",
-      "message": null,
-      "last_checked": "2025-08-12T04:02:59.462Z",
-      "http_status": 200,
-      "health_details": {}
+      "status": "down",
+      "response_time": "428ms",
+      "message": "HTTP 502 error",
+      "last_checked": "2025-08-12T04:38:18.242Z",
+      "error": "Request failed with status code 502"
     },
     {
       "name": "vLLM Service",
@@ -44,12 +42,11 @@
       "critical": true,
       "category": "ai",
       "healthCheck": "vllm_models",
-      "status": "operational",
-      "response_time": "508ms",
-      "message": null,
-      "last_checked": "2025-08-12T04:02:59.315Z",
-      "http_status": 200,
-      "health_details": {}
+      "status": "down",
+      "response_time": "425ms",
+      "message": "HTTP 502 error",
+      "last_checked": "2025-08-12T04:38:18.240Z",
+      "error": "Request failed with status code 502"
     },
     {
       "name": "Database",
@@ -60,12 +57,11 @@
       "critical": true,
       "category": "storage",
       "healthCheck": "database_status",
-      "status": "operational",
-      "response_time": "515ms",
-      "message": null,
-      "last_checked": "2025-08-12T04:03:01.979Z",
-      "http_status": 200,
-      "health_details": {}
+      "status": "down",
+      "response_time": "335ms",
+      "message": "HTTP 502 error",
+      "last_checked": "2025-08-12T04:38:20.613Z",
+      "error": "Request failed with status code 502"
     },
     {
       "name": "API - Detect",
@@ -78,12 +74,11 @@
       },
       "critical": false,
       "category": "api",
-      "status": "operational",
-      "response_time": "261ms",
-      "message": null,
-      "last_checked": "2025-08-12T04:03:01.727Z",
-      "http_status": 422,
-      "health_details": {}
+      "status": "down",
+      "response_time": "344ms",
+      "message": "HTTP 502 error",
+      "last_checked": "2025-08-12T04:38:20.624Z",
+      "error": "Request failed with status code 502"
     },
     {
       "name": "API - Extract",
@@ -96,12 +91,11 @@
       },
       "critical": false,
       "category": "api",
-      "status": "operational",
-      "response_time": "442ms",
-      "message": null,
-      "last_checked": "2025-08-12T04:03:01.977Z",
-      "http_status": 422,
-      "health_details": {}
+      "status": "down",
+      "response_time": "315ms",
+      "message": "HTTP 502 error",
+      "last_checked": "2025-08-12T04:38:20.619Z",
+      "error": "Request failed with status code 502"
     },
     {
       "name": "API - Stance",
@@ -114,12 +108,11 @@
       },
       "critical": false,
       "category": "api",
-      "status": "operational",
-      "response_time": "348ms",
-      "message": null,
-      "last_checked": "2025-08-12T04:03:04.329Z",
-      "http_status": 422,
-      "health_details": {}
+      "status": "down",
+      "response_time": "320ms",
+      "message": "HTTP 502 error",
+      "last_checked": "2025-08-12T04:38:22.947Z",
+      "error": "Request failed with status code 502"
     },
     {
       "name": "Status Page",
@@ -129,19 +122,19 @@
       "critical": false,
       "category": "monitoring",
       "status": "operational",
-      "response_time": "442ms",
+      "response_time": "409ms",
       "message": null,
-      "last_checked": "2025-08-12T04:03:04.425Z",
+      "last_checked": "2025-08-12T04:38:23.038Z",
       "http_status": 200,
       "health_details": {}
     }
   ],
   "metrics": {
-    "total_uptime": "100.0%",
-    "avg_response_time": "475ms",
+    "total_uptime": "12.5%",
+    "avg_response_time": "384ms",
     "total_deployments": "0",
     "success_rate": "100%",
-    "active_services": "8",
+    "active_services": "1",
     "incidents_resolved": "0"
   },
   "recent_deployments": [
@@ -161,7 +154,7 @@
     "environment": "production",
     "region": "self-hosted",
     "monitoring_interval": "5m",
-    "monitor_version": "16898618298",
+    "monitor_version": "16899106973",
     "deployment_urls": {
       "primary": "https://status.wiba.dev",
       "backup": "https://wiba-org.github.io/wiba-status"
