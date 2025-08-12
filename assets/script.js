@@ -62,6 +62,7 @@ class StatusPage {
         this.renderOverallStatus();
         this.renderServices();
         this.renderMetrics();
+        this.renderAPIMetrics();
         this.renderPerformance();
         this.renderDeployments();
         this.renderIncidents();
@@ -120,7 +121,12 @@ class StatusPage {
         const metricsGrid = document.getElementById('metrics-grid');
         const metrics = this.statusData.metrics;
         
-        metricsGrid.innerHTML = Object.entries(metrics).map(([key, value]) => {
+        // Filter out API metrics for separate rendering
+        const systemMetrics = Object.entries(metrics).filter(([key]) => 
+            !key.startsWith('api_') && key !== 'api_endpoints'
+        );
+        
+        metricsGrid.innerHTML = systemMetrics.map(([key, value]) => {
             const metricConfig = this.getMetricConfig(key);
             return `
                 <div class="metric-card">
@@ -129,6 +135,71 @@ class StatusPage {
                 </div>
             `;
         }).join('');
+    }
+    
+    renderAPIMetrics() {
+        const metrics = this.statusData.metrics;
+        
+        // Main RPS value
+        const rps = metrics.api_requests_per_second || 0;
+        const rpsElement = document.getElementById('current-rps');
+        const indicatorElement = document.getElementById('rps-indicator');
+        
+        if (rpsElement) {
+            rpsElement.textContent = rps.toFixed(2);
+            
+            // Color coding based on load
+            let indicatorClass = 'normal-load';
+            if (rps > 100) {
+                indicatorClass = 'high-load';
+            } else if (rps > 50) {
+                indicatorClass = 'medium-load';
+            }
+            
+            if (indicatorElement) {
+                indicatorElement.className = 'rps-indicator ' + indicatorClass;
+            }
+        }
+        
+        // Total API calls
+        const totalCalls = metrics.total_api_requests || 0;
+        const totalElement = document.getElementById('total-api-calls');
+        if (totalElement) {
+            totalElement.textContent = this.formatNumber(totalCalls);
+        }
+        
+        // Endpoint breakdown
+        if (metrics.api_endpoints) {
+            const detectElement = document.getElementById('detect-rps');
+            const extractElement = document.getElementById('extract-rps');
+            const stanceElement = document.getElementById('stance-rps');
+            
+            if (detectElement && metrics.api_endpoints.detect) {
+                detectElement.textContent = `${metrics.api_endpoints.detect.rps.toFixed(3)} req/s`;
+            }
+            if (extractElement && metrics.api_endpoints.extract) {
+                extractElement.textContent = `${metrics.api_endpoints.extract.rps.toFixed(3)} req/s`;
+            }
+            if (stanceElement && metrics.api_endpoints.stance) {
+                stanceElement.textContent = `${metrics.api_endpoints.stance.rps.toFixed(3)} req/s`;
+            }
+        }
+        
+        // Last updated time
+        const updatedElement = document.getElementById('api-metrics-updated');
+        if (updatedElement && metrics.api_metrics_updated) {
+            const date = new Date(metrics.api_metrics_updated);
+            updatedElement.textContent = this.formatRelativeTime(date);
+        }
+    }
+    
+    formatNumber(num) {
+        if (num >= 1000000) {
+            return (num / 1000000).toFixed(1) + 'M';
+        } else if (num >= 1000) {
+            return (num / 1000).toFixed(1) + 'K';
+        }
+        return num.toString();
     }
     
     renderDeployments() {

@@ -283,12 +283,33 @@ jobs:
             }, 0) / services.length
           );
           
-          return {
+          // Fetch API metrics from health endpoint
+          let apiMetrics = null;
+          try {
+            const healthResponse = await axios.get('https://wiba.dev/api/health', { timeout: 5000 });
+            if (healthResponse.data && healthResponse.data.data && healthResponse.data.data.api_metrics) {
+              apiMetrics = healthResponse.data.data.api_metrics;
+            }
+          } catch (error) {
+            console.log('Could not fetch API metrics:', error.message);
+          }
+          
+          const metrics = {
             ...historicalData.metrics,
             total_uptime: currentUptime,
             avg_response_time: `${avgResponseTime}ms`,
             active_services: operationalCount.toString()
           };
+          
+          // Add API metrics if available
+          if (apiMetrics) {
+            metrics.api_requests_per_second = apiMetrics.requests_per_second || 0;
+            metrics.total_api_requests = apiMetrics.total_requests || 0;
+            metrics.api_endpoints = apiMetrics.endpoints || {};
+            metrics.api_metrics_updated = apiMetrics.last_updated || new Date().toISOString();
+          }
+          
+          return metrics;
         }
         
         function determineOverallStatus(services) {
