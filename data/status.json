@@ -1,8 +1,8 @@
 {
-  "last_updated": "2025-09-03T07:56:20.803Z",
+  "last_updated": "2025-09-03T08:27:23.015Z",
   "overall_status": {
-    "status": "down",
-    "message": "Critical services down: vLLM Service, Database"
+    "status": "operational",
+    "message": "All systems operational"
   },
   "services": [
     {
@@ -14,9 +14,9 @@
       "critical": true,
       "category": "core",
       "status": "operational",
-      "response_time": "2029ms",
+      "response_time": "2124ms",
       "message": null,
-      "last_checked": "2025-09-03T07:55:15.053Z",
+      "last_checked": "2025-09-03T08:27:16.575Z",
       "http_status": 200,
       "health_details": {}
     },
@@ -29,9 +29,9 @@
       "critical": true,
       "category": "core",
       "status": "operational",
-      "response_time": "2141ms",
+      "response_time": "496ms",
       "message": null,
-      "last_checked": "2025-09-03T07:55:15.196Z",
+      "last_checked": "2025-09-03T08:27:14.980Z",
       "http_status": 200,
       "health_details": {}
     },
@@ -44,11 +44,12 @@
       "critical": true,
       "category": "ai",
       "healthCheck": "vllm_models",
-      "status": "down",
-      "response_time": "19784ms",
-      "message": "HTTP 522 error",
-      "last_checked": "2025-09-03T07:55:32.840Z",
-      "error": "Request failed with status code 522"
+      "status": "operational",
+      "response_time": "2091ms",
+      "message": null,
+      "last_checked": "2025-09-03T08:27:16.575Z",
+      "http_status": 200,
+      "health_details": {}
     },
     {
       "name": "Database",
@@ -59,11 +60,12 @@
       "critical": true,
       "category": "storage",
       "healthCheck": "database_status",
-      "status": "down",
-      "response_time": "10085ms",
-      "message": "Service unreachable",
-      "last_checked": "2025-09-03T07:55:44.928Z",
-      "error": "timeout of 10000ms exceeded"
+      "status": "operational",
+      "response_time": "500ms",
+      "message": null,
+      "last_checked": "2025-09-03T08:27:19.078Z",
+      "http_status": 200,
+      "health_details": {}
     },
     {
       "name": "API - Detect",
@@ -76,11 +78,12 @@
       },
       "critical": false,
       "category": "api",
-      "status": "down",
-      "response_time": "19498ms",
-      "message": "HTTP 522 error",
-      "last_checked": "2025-09-03T07:55:54.343Z",
-      "error": "Request failed with status code 522"
+      "status": "operational",
+      "response_time": "500ms",
+      "message": null,
+      "last_checked": "2025-09-03T08:27:19.080Z",
+      "http_status": 422,
+      "health_details": {}
     },
     {
       "name": "API - Extract",
@@ -93,11 +96,12 @@
       },
       "critical": false,
       "category": "api",
-      "status": "down",
-      "response_time": "19514ms",
-      "message": "HTTP 522 error",
-      "last_checked": "2025-09-03T07:55:54.437Z",
-      "error": "Request failed with status code 522"
+      "status": "operational",
+      "response_time": "322ms",
+      "message": null,
+      "last_checked": "2025-09-03T08:27:18.970Z",
+      "http_status": 422,
+      "health_details": {}
     },
     {
       "name": "API - Stance",
@@ -110,11 +114,12 @@
       },
       "critical": false,
       "category": "api",
-      "status": "down",
-      "response_time": "19361ms",
-      "message": "HTTP 522 error",
-      "last_checked": "2025-09-03T07:56:15.800Z",
-      "error": "Request failed with status code 522"
+      "status": "operational",
+      "response_time": "325ms",
+      "message": null,
+      "last_checked": "2025-09-03T08:27:21.406Z",
+      "http_status": 422,
+      "health_details": {}
     },
     {
       "name": "Status Page",
@@ -123,37 +128,38 @@
       "timeout": 10000,
       "critical": false,
       "category": "monitoring",
-      "status": "down",
-      "response_time": "10012ms",
-      "message": "Service unreachable",
-      "last_checked": "2025-09-03T07:56:06.453Z",
-      "error": "timeout of 10000ms exceeded"
+      "status": "operational",
+      "response_time": "350ms",
+      "message": null,
+      "last_checked": "2025-09-03T08:27:21.433Z",
+      "http_status": 200,
+      "health_details": {}
     }
   ],
   "metrics": {
-    "total_uptime": "25.0%",
-    "avg_response_time": "12803ms",
+    "total_uptime": "100.0%",
+    "avg_response_time": "839ms",
     "total_deployments": "0",
     "success_rate": "100%",
-    "active_services": "2",
+    "active_services": "8",
     "incidents_resolved": "0",
     "api_requests_per_second": 0,
-    "total_api_requests": 25626,
+    "total_api_requests": 25634,
     "api_endpoints": {
       "detect": {
-        "total": 2945,
+        "total": 2946,
         "rps": 0
       },
       "extract": {
-        "total": 1461,
+        "total": 1462,
         "rps": 0
       },
       "stance": {
-        "total": 1465,
+        "total": 1466,
         "rps": 0
       }
     },
-    "api_metrics_updated": "2025-09-03T07:43:43.225694+00:00"
+    "api_metrics_updated": "2025-09-03T08:27:22.933466+00:00"
   },
   "recent_deployments": [
     {
@@ -172,7 +178,7 @@
     "environment": "production",
     "region": "self-hosted",
     "monitoring_interval": "5m",
-    "monitor_version": "17426870886",
+    "monitor_version": "17427637975",
     "deployment_urls": {
       "primary": "https://status.wiba.dev",
       "backup": "https://wiba-org.github.io/wiba-status"
