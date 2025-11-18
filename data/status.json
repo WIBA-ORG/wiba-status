@@ -1,8 +1,8 @@
 {
-  "last_updated": "2025-11-18T11:30:11.159Z",
+  "last_updated": "2025-11-18T11:43:25.467Z",
   "overall_status": {
-    "status": "operational",
-    "message": "All systems operational"
+    "status": "down",
+    "message": "Critical services down: WIBA Web Interface, Database"
   },
   "services": [
     {
@@ -14,9 +14,9 @@
       "critical": true,
       "category": "core",
       "status": "operational",
-      "response_time": "1140ms",
+      "response_time": "1142ms",
       "message": null,
-      "last_checked": "2025-11-18T11:30:05.144Z",
+      "last_checked": "2025-11-18T11:43:20.900Z",
       "http_status": 200,
       "health_details": {}
     },
@@ -28,12 +28,11 @@
       "expectedContent": "WIBA",
       "critical": true,
       "category": "core",
-      "status": "operational",
-      "response_time": "1271ms",
-      "message": null,
-      "last_checked": "2025-11-18T11:30:05.308Z",
-      "http_status": 200,
-      "health_details": {}
+      "status": "down",
+      "response_time": "119ms",
+      "message": "HTTP 500 error",
+      "last_checked": "2025-11-18T11:43:19.906Z",
+      "error": "Request failed with status code 500"
     },
     {
       "name": "vLLM Service",
@@ -45,9 +44,9 @@
       "category": "ai",
       "healthCheck": "vllm_models",
       "status": "operational",
-      "response_time": "969ms",
+      "response_time": "1113ms",
       "message": null,
-      "last_checked": "2025-11-18T11:30:05.007Z",
+      "last_checked": "2025-11-18T11:43:20.902Z",
       "http_status": 200,
       "health_details": {}
     },
@@ -60,12 +59,11 @@
       "critical": true,
       "category": "storage",
       "healthCheck": "database_status",
-      "status": "operational",
-      "response_time": "615ms",
-      "message": null,
-      "last_checked": "2025-11-18T11:30:07.925Z",
-      "http_status": 200,
-      "health_details": {}
+      "status": "down",
+      "response_time": "58ms",
+      "message": "HTTP 500 error",
+      "last_checked": "2025-11-18T11:43:22.963Z",
+      "error": "Request failed with status code 500"
     },
     {
       "name": "API - Detect",
@@ -78,12 +76,11 @@
       },
       "critical": false,
       "category": "api",
-      "status": "operational",
-      "response_time": "252ms",
-      "message": null,
-      "last_checked": "2025-11-18T11:30:07.564Z",
-      "http_status": 422,
-      "health_details": {}
+      "status": "down",
+      "response_time": "57ms",
+      "message": "HTTP 500 error",
+      "last_checked": "2025-11-18T11:43:22.963Z",
+      "error": "Request failed with status code 500"
     },
     {
       "name": "API - Extract",
@@ -96,12 +93,11 @@
       },
       "critical": false,
       "category": "api",
-      "status": "operational",
-      "response_time": "480ms",
-      "message": null,
-      "last_checked": "2025-11-18T11:30:07.810Z",
-      "http_status": 422,
-      "health_details": {}
+      "status": "down",
+      "response_time": "40ms",
+      "message": "HTTP 500 error",
+      "last_checked": "2025-11-18T11:43:22.962Z",
+      "error": "Request failed with status code 500"
     },
     {
       "name": "API - Stance",
@@ -115,9 +111,9 @@
       "critical": false,
       "category": "api",
       "status": "operational",
-      "response_time": "327ms",
+      "response_time": "467ms",
       "message": null,
-      "last_checked": "2025-11-18T11:30:10.254Z",
+      "last_checked": "2025-11-18T11:43:25.432Z",
       "http_status": 422,
       "health_details": {}
     },
@@ -129,19 +125,19 @@
       "critical": false,
       "category": "monitoring",
       "status": "operational",
-      "response_time": "403ms",
+      "response_time": "435ms",
       "message": null,
-      "last_checked": "2025-11-18T11:30:10.332Z",
+      "last_checked": "2025-11-18T11:43:25.403Z",
       "http_status": 200,
       "health_details": {}
     }
   ],
   "metrics": {
-    "total_uptime": "100.0%",
-    "avg_response_time": "682ms",
+    "total_uptime": "50.0%",
+    "avg_response_time": "429ms",
     "total_deployments": "0",
     "success_rate": "100%",
-    "active_services": "8",
+    "active_services": "4",
     "incidents_resolved": "0",
     "api_requests_per_second": 0,
     "total_api_requests": 42724,
@@ -178,7 +174,7 @@
     "environment": "production",
     "region": "self-hosted",
     "monitoring_interval": "5m",
-    "monitor_version": "19464543118",
+    "monitor_version": "19464927453",
     "deployment_urls": {
       "primary": "https://status.wiba.dev",
       "backup": "https://wiba-org.github.io/wiba-status"
