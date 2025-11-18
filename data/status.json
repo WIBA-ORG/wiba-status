@@ -1,5 +1,5 @@
 {
-  "last_updated": "2025-11-18T13:22:50.789Z",
+  "last_updated": "2025-11-18T13:47:39.533Z",
   "overall_status": {
     "status": "down",
     "message": "Critical services down: WIBA Platform, WIBA Web Interface, vLLM Service, Database"
@@ -14,9 +14,9 @@
       "critical": true,
       "category": "core",
       "status": "down",
-      "response_time": "191ms",
+      "response_time": "169ms",
       "message": "HTTP 500 error",
-      "last_checked": "2025-11-18T13:22:46.342Z",
+      "last_checked": "2025-11-18T13:47:35.347Z",
       "error": "Request failed with status code 500"
     },
     {
@@ -28,9 +28,9 @@
       "critical": true,
       "category": "core",
       "status": "down",
-      "response_time": "288ms",
+      "response_time": "146ms",
       "message": "HTTP 500 error",
-      "last_checked": "2025-11-18T13:22:46.471Z",
+      "last_checked": "2025-11-18T13:47:35.354Z",
       "error": "Request failed with status code 500"
     },
     {
@@ -43,9 +43,9 @@
       "category": "ai",
       "healthCheck": "vllm_models",
       "status": "down",
-      "response_time": "285ms",
+      "response_time": "135ms",
       "message": "HTTP 500 error",
-      "last_checked": "2025-11-18T13:22:46.470Z",
+      "last_checked": "2025-11-18T13:47:35.345Z",
       "error": "Request failed with status code 500"
     },
     {
@@ -58,9 +58,9 @@
       "category": "storage",
       "healthCheck": "database_status",
       "status": "down",
-      "response_time": "40ms",
+      "response_time": "37ms",
       "message": "HTTP 500 error",
-      "last_checked": "2025-11-18T13:22:48.514Z",
+      "last_checked": "2025-11-18T13:47:37.394Z",
       "error": "Request failed with status code 500"
     },
     {
@@ -75,9 +75,9 @@
       "critical": false,
       "category": "api",
       "status": "down",
-      "response_time": "99ms",
+      "response_time": "39ms",
       "message": "HTTP 500 error",
-      "last_checked": "2025-11-18T13:22:48.575Z",
+      "last_checked": "2025-11-18T13:47:37.398Z",
       "error": "Request failed with status code 500"
     },
     {
@@ -92,9 +92,9 @@
       "critical": false,
       "category": "api",
       "status": "down",
-      "response_time": "50ms",
+      "response_time": "23ms",
       "message": "HTTP 500 error",
-      "last_checked": "2025-11-18T13:22:48.543Z",
+      "last_checked": "2025-11-18T13:47:37.399Z",
       "error": "Request failed with status code 500"
     },
     {
@@ -109,9 +109,9 @@
       "critical": false,
       "category": "api",
       "status": "down",
-      "response_time": "53ms",
+      "response_time": "27ms",
       "message": "HTTP 500 error",
-      "last_checked": "2025-11-18T13:22:50.629Z",
+      "last_checked": "2025-11-18T13:47:39.428Z",
       "error": "Request failed with status code 500"
     },
     {
@@ -122,15 +122,15 @@
       "critical": false,
       "category": "monitoring",
       "status": "down",
-      "response_time": "132ms",
+      "response_time": "107ms",
       "message": "HTTP 500 error",
-      "last_checked": "2025-11-18T13:22:50.711Z",
+      "last_checked": "2025-11-18T13:47:39.510Z",
       "error": "Request failed with status code 500"
     }
   ],
   "metrics": {
     "total_uptime": "0.0%",
-    "avg_response_time": "142ms",
+    "avg_response_time": "85ms",
     "total_deployments": "0",
     "success_rate": "100%",
     "active_services": "0",
@@ -170,7 +170,7 @@
     "environment": "production",
     "region": "self-hosted",
     "monitoring_interval": "5m",
-    "monitor_version": "19467707680",
+    "monitor_version": "19468419794",
     "deployment_urls": {
       "primary": "https://status.wiba.dev",
       "backup": "https://wiba-org.github.io/wiba-status"
