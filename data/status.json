@@ -1,5 +1,5 @@
 {
-  "last_updated": "2025-11-23T12:24:33.373Z",
+  "last_updated": "2025-11-23T12:59:25.087Z",
   "overall_status": {
     "status": "operational",
     "message": "All systems operational"
@@ -14,9 +14,9 @@
       "critical": true,
       "category": "core",
       "status": "operational",
-      "response_time": "1355ms",
+      "response_time": "1015ms",
       "message": null,
-      "last_checked": "2025-11-23T12:24:27.449Z",
+      "last_checked": "2025-11-23T12:59:19.333Z",
       "http_status": 200,
       "health_details": {}
     },
@@ -29,9 +29,9 @@
       "critical": true,
       "category": "core",
       "status": "operational",
-      "response_time": "592ms",
+      "response_time": "581ms",
       "message": null,
-      "last_checked": "2025-11-23T12:24:26.719Z",
+      "last_checked": "2025-11-23T12:59:18.931Z",
       "http_status": 200,
       "health_details": {}
     },
@@ -45,9 +45,9 @@
       "category": "ai",
       "healthCheck": "vllm_models",
       "status": "operational",
-      "response_time": "1325ms",
+      "response_time": "1113ms",
       "message": null,
-      "last_checked": "2025-11-23T12:24:27.452Z",
+      "last_checked": "2025-11-23T12:59:19.463Z",
       "http_status": 200,
       "health_details": {}
     },
@@ -61,9 +61,9 @@
       "category": "storage",
       "healthCheck": "database_status",
       "status": "operational",
-      "response_time": "532ms",
+      "response_time": "468ms",
       "message": null,
-      "last_checked": "2025-11-23T12:24:29.986Z",
+      "last_checked": "2025-11-23T12:59:21.934Z",
       "http_status": 200,
       "health_details": {}
     },
@@ -79,9 +79,9 @@
       "critical": false,
       "category": "api",
       "status": "operational",
-      "response_time": "413ms",
+      "response_time": "466ms",
       "message": null,
-      "last_checked": "2025-11-23T12:24:29.869Z",
+      "last_checked": "2025-11-23T12:59:21.933Z",
       "http_status": 422,
       "health_details": {}
     },
@@ -97,9 +97,9 @@
       "critical": false,
       "category": "api",
       "status": "operational",
-      "response_time": "400ms",
+      "response_time": "334ms",
       "message": null,
-      "last_checked": "2025-11-23T12:24:29.874Z",
+      "last_checked": "2025-11-23T12:59:21.819Z",
       "http_status": 422,
       "health_details": {}
     },
@@ -115,9 +115,9 @@
       "critical": false,
       "category": "api",
       "status": "operational",
-      "response_time": "394ms",
+      "response_time": "179ms",
       "message": null,
-      "last_checked": "2025-11-23T12:24:32.382Z",
+      "last_checked": "2025-11-23T12:59:24.115Z",
       "http_status": 422,
       "health_details": {}
     },
@@ -129,37 +129,37 @@
       "critical": false,
       "category": "monitoring",
       "status": "operational",
-      "response_time": "465ms",
+      "response_time": "423ms",
       "message": null,
-      "last_checked": "2025-11-23T12:24:32.455Z",
+      "last_checked": "2025-11-23T12:59:24.360Z",
       "http_status": 200,
       "health_details": {}
     }
   ],
   "metrics": {
     "total_uptime": "100.0%",
-    "avg_response_time": "685ms",
+    "avg_response_time": "572ms",
     "total_deployments": "0",
     "success_rate": "100%",
     "active_services": "8",
     "incidents_resolved": "0",
     "api_requests_per_second": 0,
-    "total_api_requests": 47539,
+    "total_api_requests": 47546,
     "api_endpoints": {
       "detect": {
-        "total": 9439,
+        "total": 9440,
         "rps": 0
       },
       "extract": {
-        "total": 2197,
+        "total": 2198,
         "rps": 0
       },
       "stance": {
-        "total": 2199,
+        "total": 2200,
         "rps": 0
       }
     },
-    "api_metrics_updated": "2025-11-23T12:24:33.274809+00:00"
+    "api_metrics_updated": "2025-11-23T12:59:24.987942+00:00"
   },
   "recent_deployments": [
     {
@@ -178,7 +178,7 @@
     "environment": "production",
     "region": "self-hosted",
     "monitoring_interval": "5m",
-    "monitor_version": "19611104277",
+    "monitor_version": "19611525441",
     "deployment_urls": {
       "primary": "https://status.wiba.dev",
       "backup": "https://wiba-org.github.io/wiba-status"
