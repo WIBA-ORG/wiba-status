@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-01-02T07:48:02.236Z",
+  "last_updated": "2026-01-02T07:59:18.251Z",
   "overall_status": {
     "status": "degraded",
     "message": "Service issues detected: WIBA Platform, vLLM Service, Database"
@@ -14,9 +14,9 @@
       "critical": true,
       "category": "core",
       "status": "degraded",
-      "response_time": "575ms",
+      "response_time": "405ms",
       "message": "HTTP 404 - may indicate issues",
-      "last_checked": "2026-01-02T07:47:56.554Z",
+      "last_checked": "2026-01-02T07:59:12.876Z",
       "http_status": 404,
       "health_details": {}
     },
@@ -29,9 +29,9 @@
       "critical": true,
       "category": "core",
       "status": "operational",
-      "response_time": "959ms",
+      "response_time": "653ms",
       "message": null,
-      "last_checked": "2026-01-02T07:47:56.969Z",
+      "last_checked": "2026-01-02T07:59:13.156Z",
       "http_status": 200,
       "health_details": {}
     },
@@ -45,9 +45,9 @@
       "category": "ai",
       "healthCheck": "vllm_models",
       "status": "degraded",
-      "response_time": "532ms",
+      "response_time": "394ms",
       "message": "HTTP 404 - may indicate issues",
-      "last_checked": "2026-01-02T07:47:56.544Z",
+      "last_checked": "2026-01-02T07:59:12.897Z",
       "http_status": 404,
       "health_details": {}
     },
@@ -61,9 +61,9 @@
       "category": "storage",
       "healthCheck": "database_status",
       "status": "degraded",
-      "response_time": "450ms",
+      "response_time": "345ms",
       "message": "HTTP 404 - may indicate issues",
-      "last_checked": "2026-01-02T07:47:59.422Z",
+      "last_checked": "2026-01-02T07:59:15.504Z",
       "http_status": 404,
       "health_details": {}
     },
@@ -79,9 +79,9 @@
       "critical": false,
       "category": "api",
       "status": "operational",
-      "response_time": "261ms",
+      "response_time": "342ms",
       "message": null,
-      "last_checked": "2026-01-02T07:47:59.235Z",
+      "last_checked": "2026-01-02T07:59:15.503Z",
       "http_status": 422,
       "health_details": {}
     },
@@ -97,9 +97,9 @@
       "critical": false,
       "category": "api",
       "status": "operational",
-      "response_time": "424ms",
+      "response_time": "165ms",
       "message": null,
-      "last_checked": "2026-01-02T07:47:59.415Z",
+      "last_checked": "2026-01-02T07:59:15.343Z",
       "http_status": 422,
       "health_details": {}
     },
@@ -115,9 +115,9 @@
       "critical": false,
       "category": "api",
       "status": "operational",
-      "response_time": "440ms",
+      "response_time": "322ms",
       "message": null,
-      "last_checked": "2026-01-02T07:48:01.865Z",
+      "last_checked": "2026-01-02T07:59:17.828Z",
       "http_status": 422,
       "health_details": {}
     },
@@ -129,16 +129,16 @@
       "critical": false,
       "category": "monitoring",
       "status": "operational",
-      "response_time": "558ms",
+      "response_time": "423ms",
       "message": null,
-      "last_checked": "2026-01-02T07:48:01.985Z",
+      "last_checked": "2026-01-02T07:59:17.931Z",
       "http_status": 200,
       "health_details": {}
     }
   ],
   "metrics": {
     "total_uptime": "62.5%",
-    "avg_response_time": "525ms",
+    "avg_response_time": "381ms",
     "total_deployments": "0",
     "success_rate": "100%",
     "active_services": "5",
@@ -178,7 +178,7 @@
     "environment": "production",
     "region": "self-hosted",
     "monitoring_interval": "5m",
-    "monitor_version": "20653459203",
+    "monitor_version": "20653597283",
     "deployment_urls": {
       "primary": "https://status.wiba.dev",
       "backup": "https://wiba-org.github.io/wiba-status"
