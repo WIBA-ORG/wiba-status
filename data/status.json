@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-04-29T21:13:54.793Z",
+  "last_updated": "2026-04-29T22:12:18.390Z",
   "overall_status": {
-    "status": "down",
-    "message": "Critical services down: WIBA Web Interface"
+    "status": "degraded",
+    "message": "Service issues detected: WIBA Platform, vLLM Service, Database"
   },
   "services": [
     {
@@ -14,9 +14,9 @@
       "critical": true,
       "category": "core",
       "status": "degraded",
-      "response_time": "736ms",
+      "response_time": "438ms",
       "message": "HTTP 404 - may indicate issues",
-      "last_checked": "2026-04-29T21:13:35.301Z",
+      "last_checked": "2026-04-29T22:12:12.987Z",
       "http_status": 404,
       "health_details": {}
     },
@@ -28,11 +28,12 @@
       "expectedContent": "WIBA",
       "critical": true,
       "category": "core",
-      "status": "down",
-      "response_time": "15013ms",
-      "message": "Service unreachable",
-      "last_checked": "2026-04-29T21:13:49.609Z",
-      "error": "timeout of 15000ms exceeded"
+      "status": "operational",
+      "response_time": "700ms",
+      "message": null,
+      "last_checked": "2026-04-29T22:12:13.282Z",
+      "http_status": 200,
+      "health_details": {}
     },
     {
       "name": "vLLM Service",
@@ -44,9 +45,9 @@
       "category": "ai",
       "healthCheck": "vllm_models",
       "status": "degraded",
-      "response_time": "556ms",
+      "response_time": "404ms",
       "message": "HTTP 404 - may indicate issues",
-      "last_checked": "2026-04-29T21:13:35.154Z",
+      "last_checked": "2026-04-29T22:12:12.987Z",
       "http_status": 404,
       "health_details": {}
     },
@@ -60,9 +61,9 @@
       "category": "storage",
       "healthCheck": "database_status",
       "status": "degraded",
-      "response_time": "287ms",
+      "response_time": "358ms",
       "message": "HTTP 404 - may indicate issues",
-      "last_checked": "2026-04-29T21:13:51.897Z",
+      "last_checked": "2026-04-29T22:12:15.642Z",
       "http_status": 404,
       "health_details": {}
     },
@@ -78,9 +79,9 @@
       "critical": false,
       "category": "api",
       "status": "operational",
-      "response_time": "463ms",
+      "response_time": "346ms",
       "message": null,
-      "last_checked": "2026-04-29T21:13:52.076Z",
+      "last_checked": "2026-04-29T22:12:15.632Z",
       "http_status": 422,
       "health_details": {}
     },
@@ -96,9 +97,9 @@
       "critical": false,
       "category": "api",
       "status": "operational",
-      "response_time": "445ms",
+      "response_time": "327ms",
       "message": null,
-      "last_checked": "2026-04-29T21:13:52.075Z",
+      "last_checked": "2026-04-29T22:12:15.631Z",
       "http_status": 422,
       "health_details": {}
     },
@@ -114,9 +115,9 @@
       "critical": false,
       "category": "api",
       "status": "operational",
-      "response_time": "468ms",
+      "response_time": "186ms",
       "message": null,
-      "last_checked": "2026-04-29T21:13:54.546Z",
+      "last_checked": "2026-04-29T22:12:17.830Z",
       "http_status": 422,
       "health_details": {}
     },
@@ -128,19 +129,19 @@
       "critical": false,
       "category": "monitoring",
       "status": "operational",
-      "response_time": "450ms",
+      "response_time": "412ms",
       "message": null,
-      "last_checked": "2026-04-29T21:13:54.530Z",
+      "last_checked": "2026-04-29T22:12:18.058Z",
       "http_status": 200,
       "health_details": {}
     }
   ],
   "metrics": {
-    "total_uptime": "50.0%",
-    "avg_response_time": "2302ms",
+    "total_uptime": "62.5%",
+    "avg_response_time": "396ms",
     "total_deployments": "0",
     "success_rate": "100%",
-    "active_services": "4",
+    "active_services": "5",
     "incidents_resolved": "0",
     "api_requests_per_second": 0,
     "total_api_requests": 30,
@@ -177,7 +178,7 @@
     "environment": "production",
     "region": "self-hosted",
     "monitoring_interval": "5m",
-    "monitor_version": "25134198838",
+    "monitor_version": "25136554701",
     "deployment_urls": {
       "primary": "https://status.wiba.dev",
       "backup": "https://wiba-org.github.io/wiba-status"
