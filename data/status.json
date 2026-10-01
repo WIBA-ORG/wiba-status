@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-10-01T01:34:07.863Z",
+  "last_updated": "2026-10-01T07:45:53.652Z",
   "overall_status": {
     "status": "down",
     "message": "Critical services down: WIBA Platform, WIBA Web Interface, vLLM Service, Database"
@@ -14,9 +14,9 @@
       "critical": true,
       "category": "core",
       "status": "down",
-      "response_time": "19449ms",
+      "response_time": "19781ms",
       "message": "HTTP 522 error",
-      "last_checked": "2026-10-01T01:33:19.764Z",
+      "last_checked": "2026-10-01T07:45:05.443Z",
       "error": "Request failed with status code 522"
     },
     {
@@ -28,9 +28,9 @@
       "critical": true,
       "category": "core",
       "status": "down",
-      "response_time": "15013ms",
+      "response_time": "15012ms",
       "message": "Service unreachable",
-      "last_checked": "2026-10-01T01:33:15.361Z",
+      "last_checked": "2026-10-01T07:45:00.706Z",
       "error": "timeout of 15000ms exceeded"
     },
     {
@@ -43,9 +43,9 @@
       "category": "ai",
       "healthCheck": "vllm_models",
       "status": "down",
-      "response_time": "19415ms",
+      "response_time": "19720ms",
       "message": "HTTP 522 error",
-      "last_checked": "2026-10-01T01:33:19.765Z",
+      "last_checked": "2026-10-01T07:45:05.415Z",
       "error": "Request failed with status code 522"
     },
     {
@@ -58,9 +58,9 @@
       "category": "storage",
       "healthCheck": "database_status",
       "status": "down",
-      "response_time": "10025ms",
+      "response_time": "10024ms",
       "message": "Service unreachable",
-      "last_checked": "2026-10-01T01:33:31.792Z",
+      "last_checked": "2026-10-01T07:45:17.469Z",
       "error": "timeout of 10000ms exceeded"
     },
     {
@@ -75,9 +75,9 @@
       "critical": false,
       "category": "api",
       "status": "down",
-      "response_time": "19586ms",
+      "response_time": "19469ms",
       "message": "HTTP 522 error",
-      "last_checked": "2026-10-01T01:33:41.356Z",
+      "last_checked": "2026-10-01T07:45:26.917Z",
       "error": "Request failed with status code 522"
     },
     {
@@ -92,9 +92,9 @@
       "critical": false,
       "category": "api",
       "status": "down",
-      "response_time": "19712ms",
+      "response_time": "19453ms",
       "message": "HTTP 522 error",
-      "last_checked": "2026-10-01T01:33:41.500Z",
+      "last_checked": "2026-10-01T07:45:26.918Z",
       "error": "Request failed with status code 522"
     },
     {
@@ -109,9 +109,9 @@
       "critical": false,
       "category": "api",
       "status": "down",
-      "response_time": "19357ms",
+      "response_time": "19727ms",
       "message": "HTTP 522 error",
-      "last_checked": "2026-10-01T01:34:02.860Z",
+      "last_checked": "2026-10-01T07:45:48.647Z",
       "error": "Request failed with status code 522"
     },
     {
@@ -122,15 +122,15 @@
       "critical": false,
       "category": "monitoring",
       "status": "down",
-      "response_time": "10011ms",
+      "response_time": "10012ms",
       "message": "Service unreachable",
-      "last_checked": "2026-10-01T01:33:53.516Z",
+      "last_checked": "2026-10-01T07:45:38.934Z",
       "error": "timeout of 10000ms exceeded"
     }
   ],
   "metrics": {
     "total_uptime": "0.0%",
-    "avg_response_time": "16571ms",
+    "avg_response_time": "16650ms",
     "total_deployments": "0",
     "success_rate": "100%",
     "active_services": "0",
@@ -170,7 +170,7 @@
     "environment": "production",
     "region": "self-hosted",
     "monitoring_interval": "5m",
-    "monitor_version": "36801607294",
+    "monitor_version": "36832087095",
     "deployment_urls": {
       "primary": "https://status.wiba.dev",
       "backup": "https://wiba-org.github.io/wiba-status"
